@@ -1,5 +1,6 @@
 package booby.test;
 import com.thinking.machines.webrock.annotations.*;
+@GET
 @Path("/calculator")
 public class Calculator 
 {
