@@ -21,7 +21,7 @@ public class TMWebRock extends HttpServlet
             Method serviceMethod=service.getService();
             Object obj=serviceClass.newInstance();
             Object result=serviceMethod.invoke(obj,a,b);
-            System.out.println("Result : "+result)
+            System.out.println("Result : "+result);
         }catch(Exception e){System.out.println(e);}
     }
 }
