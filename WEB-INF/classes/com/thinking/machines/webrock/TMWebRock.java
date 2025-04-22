@@ -53,6 +53,7 @@ public class TMWebRock extends HttpServlet
             Method serviceMethod=service.getService();
             if(serviceMethod.isAnnotationPresent(GET.class))
             {
+                System.out.println("GET annotation is with the method");
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 return;
             }
