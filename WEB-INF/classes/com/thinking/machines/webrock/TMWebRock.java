@@ -9,7 +9,9 @@ public class TMWebRock extends HttpServlet
     {
         try{
             WebRockModel webRockModel=(WebRockModel)getServletContext().getAttribute("webRockModel");
-            webRockModel.print();
+            //webRockModel.print();
+            System.out.println(request.getPathInfo());
+            String path=request.getPathInfo();
         }catch(Exception e){System.out.println(e);}
     }
 }
