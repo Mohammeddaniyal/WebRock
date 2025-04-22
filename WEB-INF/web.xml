@@ -55,12 +55,12 @@
 
 <servlet>
     <servlet-name>TMWebRock</servlet-name>
-    <servlet-class>com.thinking.machines.webrock.TMwebRock</servlet-class>
+    <servlet-class>com.thinking.machines.webrock.TMWebRock</servlet-class>
 </servlet>
 
 <servlet-mapping>
     <servlet-name>TMWebRock</servlet-name>
-    <url-pattern>/calulator/*</url-pattern>
+    <url-pattern>/calulatorService/*</url-pattern>
 </servlet-mapping>
 
 
