@@ -16,7 +16,7 @@ public class TMWebRock extends HttpServlet
             int b=Integer.parseInt(request.getParameter("b"));
             System.out.println("Values : "+a+","+b);
             String path=request.getPathInfo();
-            Service service=webRockModel.get(path);
+            Service service=webRockModel.getService(path);
             Class serviceClass=service.getServiceClass();
             Method serviceMethod=service.getService();
             Object obj=serviceClass.newInstance();
