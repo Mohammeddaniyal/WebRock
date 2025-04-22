@@ -19,11 +19,13 @@ public class TMWebRock extends HttpServlet
             if(serviceClass.isAnnotationPresent(POST.class))
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                return;
             }
             Method serviceMethod=service.getService();
             if(serviceClass.isAnnotationPresent(POST.class))
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                return;
             }
             System.out.println(request.getPathInfo());
             int a=Integer.parseInt(request.getParameter("a"));
@@ -46,11 +48,13 @@ public class TMWebRock extends HttpServlet
             if(serviceClass.isAnnotationPresent(GET.class))
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                return;
             }
             Method serviceMethod=service.getService();
             if(serviceClass.isAnnotationPresent(GET.class))
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                return;
             }
             System.out.println(request.getPathInfo());
             int a=Integer.parseInt(request.getParameter("a"));
