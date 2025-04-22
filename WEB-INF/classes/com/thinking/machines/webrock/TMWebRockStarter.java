@@ -14,7 +14,7 @@ private static final Logger logger = Logger.getLogger(TMWebRockStarter.class.get
     static {
         try {
             // Setup the file handler for logging
-            FileHandler fileHandler = new FileHandler("tmwebrock.log", true); // appends to log file
+            FileHandler fileHandler = new FileHandler("_tmwebrock.log", true); // appends to log file
             fileHandler.setFormatter(new SimpleFormatter()); // Simple formatter for log messages
             logger.addHandler(fileHandler); // Add the handler to the logger
         } catch (IOException e) {
