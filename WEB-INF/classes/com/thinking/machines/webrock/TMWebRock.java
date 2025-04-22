@@ -22,7 +22,7 @@ public class TMWebRock extends HttpServlet
                 return;
             }
             Method serviceMethod=service.getService();
-            if(serviceClass.isAnnotationPresent(POST.class))
+            if(serviceMethod.isAnnotationPresent(POST.class))
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 return;
@@ -51,7 +51,7 @@ public class TMWebRock extends HttpServlet
                 return;
             }
             Method serviceMethod=service.getService();
-            if(serviceClass.isAnnotationPresent(GET.class))
+            if(serviceMethod.isAnnotationPresent(GET.class))
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 return;
