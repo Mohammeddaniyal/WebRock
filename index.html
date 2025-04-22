@@ -5,13 +5,24 @@
 <title>TM WEB ROCK</title>
 </head>
 <body>
-    <h1>Add</h1>
-<form method="post" action="/tmwebrock/calulatorService/calculator/add">
+    <h1>Calculator</h1>
+<form id="calcForm" method="get">
     Enter First Number &nbsp;
     <input type='text' id="a" name="a"><br>
     Enter Second Number &nbsp;
     <input type="text" id='b' name='b'><br>
-    <button type="submit">Add</button> 
+    <button type="button" onclick="submitForm('add')">Add</button> 
+    <button type="button" onclick="submitForm('sub')">Subtract</button> 
+    <button type="button" onclick="submitForm('mul')">Multiply</button> 
+    <button type="button" onclick="submitForm('div')">Division</button> 
 </form>
+<script>
+    function submitForm(operation)
+    {
+        const form=document.getElementById('calcForm');
+        form.action=`/tmwebrock/calulatorService/calculator/${operation}`;
+        form.submit();
+    }
+</script>
 </body>
 </html>
