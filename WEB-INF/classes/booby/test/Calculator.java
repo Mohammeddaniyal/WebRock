@@ -18,7 +18,7 @@ public int subtract(int e,int f)
 {
 return e-f;
 }
-@Forward("/Home.jsp")
+@Forward("/test.jsp")
 @Path("/mul")
 public int multiply(int e,int f)
 {
