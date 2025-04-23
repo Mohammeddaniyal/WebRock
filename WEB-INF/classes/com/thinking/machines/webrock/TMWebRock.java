@@ -11,7 +11,15 @@ public class TMWebRock extends HttpServlet
     private void handleRequestForwardTo(HttpServletRequest request,HttpServletResponse response,WebRockModel webRockModel,String forwardTo)
     {
         try
-        {}catch(Exception e)
+        {
+            if(webRockModel.get(forwardTo)!=null)
+            {
+                RequestDispatcher requestDispatcher=request.getRequestDispatcher(forwardTo);
+                requestDispatcher.forward(request,response);   
+            }else{
+                
+            }
+        }catch(Exception e)
         {
             System.out.println(e);  
         }
