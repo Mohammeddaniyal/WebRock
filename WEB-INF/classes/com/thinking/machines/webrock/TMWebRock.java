@@ -17,18 +17,14 @@ public class TMWebRock extends HttpServlet
             if(exists)
             {
                 // get the servlet mapping part of the url (based on how servlet is mapped)
+                // for instance it'll return /calculatorService
                 String servletPath=request.getServletPath(); 
-                requestDispatcher=request.getRequestDispatcher();
-            }
-            if(webRockModel.getService(forwardTo)!=null)
-            {
-                RequestDispatcher requestDispatcher=requestDispatcher();
-                requestDispatcher.forward(request,response);   
+                requestDispatcher=request.getRequestDispatcher(servletPath+forwardTo);
+                requestDispatcher.forward(request,response);    
             }else{
-                RequestDispatcher
-                requestDispatcher.forward(request,response);
-            
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                requestDispatcher=request.getRequestDispatcher(forwardTo);
+                if(requestDispatcher!=null) requestDispatcher.forward(request,response);
+                else response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
             }catch(Exception e)
         {
