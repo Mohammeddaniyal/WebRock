@@ -6,7 +6,7 @@ public class Calculator
 {
 @GET
 @Path("/add")
-@Forward("/calculator/sub")
+@Forward("/calculator/forward")
 public int add(int e,int f)
 {
 return e+f;
@@ -27,5 +27,10 @@ return e*f;
 public int divide(int e,int f)
 {
 return e/f;
+}
+@Path("/forward")
+public void forwardTo()
+{
+    System.out.println("Request arrived by forwarding");
 }
 }
