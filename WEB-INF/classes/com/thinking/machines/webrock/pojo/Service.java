@@ -5,6 +5,8 @@ public class Service
 private Class serviceClass;
 private  String path;
 private Method service;
+private boolean isGetAllowed;
+private boolean isPostAllowed;
 private String forwardTo;
 public Service()
 {
