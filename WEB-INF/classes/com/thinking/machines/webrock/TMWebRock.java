@@ -12,13 +12,16 @@ public class TMWebRock extends HttpServlet
     {
         try
         {
+            RequestDispatcher requestDispatcher=request.getRequestDispatcher(forwardTo);
             if(webRockModel.get(forwardTo)!=null)
             {
                 RequestDispatcher requestDispatcher=request.getRequestDispatcher(forwardTo);
                 requestDispatcher.forward(request,response);   
             }else{
-                
+                //To Check Whether the given Resource exists or not
+                RequestDispatcher requestDispatcher=request       
             }
+         
         }catch(Exception e)
         {
             System.out.println(e);  
