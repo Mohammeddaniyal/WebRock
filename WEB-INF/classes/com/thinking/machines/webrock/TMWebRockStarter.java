@@ -74,9 +74,9 @@ WebRockModel webRockModel=(WebRockModel)getServletContext().getAttribute("webRoc
 Path path=(Path)serviceClass.getAnnotation(Path.class);
 if(path==null) continue;
 
-boolean isGetAllowed=serviceClass.isAnnotationPresent(GET.class);
+boolean isGetAllowedOnClass=serviceClass.isAnnotationPresent(GET.class);
 
-boolean isPostAllowed=serviceClass.isAnnotationPresent(POST.class);
+boolean isPostAllowedOnClass=serviceClass.isAnnotationPresent(POST.class);
 
 
 Method []methods=serviceClass.getMethods();
@@ -84,26 +84,21 @@ for(Method method:methods)
 {
 Path p=method.getAnnotation(Path.class);
 if(p==null) continue;
-if(p.value().equals("/forward"))
-{
-    System.out.println("1."+isGetAllowed+","+isPostAllowed);
-}
+
+boolean isGetAllowed=isGetAllowedOnClass;
+boolean isPostAllowed=isPostAllowedOnClass;
 //giving priority to method level annotation GET/POST
 if(method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.class))
 {
     System.out.println("Either GET/POST Present : "+p.value());
     isGetAllowed=method.isAnnotationPresent(GET.class);
     isPostAllowed=method.isAnnotationPresent(POST.class);
-}else if(isGetAllowed==false && isPostAllowed==false)//in case of no annotaiton present either on class or method allow both
+}else if(isGetAllowedOnClass==false && isPostAllowedOnClass==false)//in case of no annotaiton present either on class or method allow both
 {
     System.out.println(path.value());
     isGetAllowed=isPostAllowed=true;
-    System.out.println(isGetAllowed+","+isPostAllowed);
 }
-if(p.value().equals("/forward"))
-{
-    System.out.println("2. "+isGetAllowed+","+isPostAllowed)
-}
+
 Forward forward=method.getAnnotation(Forward.class);
 
 Service service=new Service();
@@ -114,8 +109,10 @@ service.setIsGetAllowed(isGetAllowed);
 service.setIsPostAllowed(isPostAllowed);
 if(forward!=null) service.setForwardTo(forward.value());
 logger.info("Path : " + path.value() + p.value());
+System.out.println("---------------");
 System.out.println("Path : "+path.value()+p.value());
 System.out.println(isGetAllowed+","+isPostAllowed);
+System.out.println("---------------");
 webRockModel.putService(service);
 }
 }
