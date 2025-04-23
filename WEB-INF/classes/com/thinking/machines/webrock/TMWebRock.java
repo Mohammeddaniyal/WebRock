@@ -22,8 +22,12 @@ public class TMWebRock extends HttpServlet
                 requestDispatcher=request.getRequestDispatcher(servletPath+forwardTo);
                 requestDispatcher.forward(request,response);    
             }else{
-                requestDispatcher=request.getRequestDispatcher(forwardTo);
-                if(requestDispatcher!=null) requestDispatcher.forward(request,response);
+                //check whether the resource exists or not
+                if(getServletContext().getResource(forwardTo)!=null)
+                    {
+                    requestDispatcher=request.getRequestDispatcher(forwardTo);  
+                    requestDispatcher.forward(request,response);
+                    }
                 else response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
             }catch(Exception e)
@@ -36,7 +40,6 @@ public class TMWebRock extends HttpServlet
         try{
             System.out.println("GET TYPE REQUEST");
             WebRockModel webRockModel=(WebRockModel)getServletContext().getAttribute("webRockModel");
-            webRockModel.print();
             String path=request.getPathInfo();
             Service service=webRockModel.getService(path);
             Class serviceClass=service.getServiceClass();
