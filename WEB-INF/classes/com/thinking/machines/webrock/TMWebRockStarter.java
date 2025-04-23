@@ -88,6 +88,7 @@ if(p==null) continue;
 //giving priority to method level annotation GET/POST
 if(method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.class))
 {
+    System.out.println("Either GET/POST Present : "+p.value());
     isGetAllowed=method.isAnnotationPresent(GET.class);
     isPostAllowed=method.isAnnotationPresent(POST.class);
 }else if(isGetAllowed==false && isPostAllowed==false)//in case of no annotaiton present either on class or method allow both
@@ -108,6 +109,7 @@ service.setIsPostAllowed(isPostAllowed);
 if(forward!=null) service.setForwardTo(forward.value());
 logger.info("Path : " + path.value() + p.value());
 System.out.println("Path : "+path.value()+p.value());
+System.out.println(isGetAllowed+","+isPostAllowed);
 webRockModel.putService(service);
 }
 }
