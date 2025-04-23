@@ -25,6 +25,10 @@ public void setPath(java.lang.String path)
 {
 this.path=path;
 }
+public void setForwardTo(String forwardTo)
+{
+    this.forwardTo=forwardTo;
+}
 public java.lang.String getPath()
 {
 return this.path;
@@ -36,5 +40,9 @@ this.service=service;
 public java.lang.reflect.Method getService()
 {
 return this.service;
+}
+public String getForwardTo()
+{
+    return this.forwardTo;
 }
 }
