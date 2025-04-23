@@ -55,7 +55,10 @@ public boolean isGetAllowed()
 {
     return this.isGetAllowed;
 }
-public 
+public boolean isPostAllowed()
+{
+    return this.isPostAllowed;
+}
 public String getForwardTo()
 {
     return this.forwardTo;
