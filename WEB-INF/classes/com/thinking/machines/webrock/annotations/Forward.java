@@ -3,3 +3,6 @@ import java.lang.annotations.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Forward
+{
+    public String value();
+}
