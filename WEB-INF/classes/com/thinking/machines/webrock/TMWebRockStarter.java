@@ -88,16 +88,21 @@ if(p==null) continue;
 //giving priority to method level annotation GET/POST
 if(method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.class))
 {
+    isGetAllowed=method.isAnnotationPresent(GET.class);
+    isPostAllowed=method.isAnnotationPresent(POST.class);
+}else if(isGetAllowed==false && isPostAllowed==false)//in case of no annotaiton present either on class or method allow both
+{
+    isGetAllowed=isPostAllowed=true;
+}
 
-}else if()//in case of no annotaiton present either on class or method allow both
-
-boolean isGetAllowed=method
 Forward forward=method.getAnnotation(Forward.class);
 
 Service service=new Service();
 service.setServiceClass(serviceClass);
 service.setService(method);
 service.setPath(path.value()+p.value());
+service.setIsGetAllowed(isGetAllowed);
+service.setIsPostAllowed(isPostAllowed);
 if(forward!=null) service.setForwardTo(forward.value());
 logger.info("Path : " + path.value() + p.value());
 System.out.println("Path : "+path.value()+p.value());
