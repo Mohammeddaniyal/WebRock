@@ -1,11 +1,10 @@
 package booby.test;
 import com.thinking.machines.webrock.annotations.*;
-
+@POST
 @Path("/calculator")
 public class Calculator 
 {
 @GET
-@POST
 @Path("/add")
 @Forward("/calculator/forward")
 public int add(int e,int f)
@@ -13,7 +12,6 @@ public int add(int e,int f)
     System.out.println("arrived for add");
 return e+f;
 }
-@POST
 @Path("/sub")
 public int subtract(int e,int f)
 {
@@ -31,6 +29,7 @@ public int divide(int e,int f)
 {
 return e/f;
 }
+@GET
 @Path("/forward")
 public void forwardTo(int a,int b)
 {
