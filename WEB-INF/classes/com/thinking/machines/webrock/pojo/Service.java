@@ -27,6 +27,14 @@ public void setPath(java.lang.String path)
 {
 this.path=path;
 }
+public void setIsGetAllowed(boolean isGetAllowed)
+{
+    this.isGetAllowed=isGetAllowed;
+}
+public void setIsPostAllowed(boolean isPostAllowed)
+{
+    this.isPostAllowed=isPostAllowed;
+}
 public void setForwardTo(String forwardTo)
 {
     this.forwardTo=forwardTo;
