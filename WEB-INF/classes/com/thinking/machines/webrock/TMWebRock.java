@@ -13,7 +13,7 @@ public class TMWebRock extends HttpServlet
         try
         {
             RequestDispatcher requestDispatcher=request.getRequestDispatcher(forwardTo);
-            if(webRockModel.get(forwardTo)!=null)
+            if(webRockModel.getService(forwardTo)!=null)
             {
                 requestDispatcher.forward(request,response);   
             }else if(requestDispatcher!=null){
@@ -86,7 +86,7 @@ public class TMWebRock extends HttpServlet
             Object obj=serviceClass.newInstance();
             Object result=serviceMethod.invoke(obj,a,b);
             System.out.println("Result : "+result);
-            if(fowardTo!=null) handleRequestForwardTo(request,response,webRockModel,forwardTo);
+            if(forwardTo!=null) handleRequestForwardTo(request,response,webRockModel,forwardTo);
         }catch(Exception e){System.out.println(e);}
     }
 }
