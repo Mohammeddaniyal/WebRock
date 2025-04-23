@@ -30,6 +30,8 @@ public void print()
                 System.out.println("  Service Method: " + service.getService().getName());
                 System.out.println("  Service Path: " + service.getPath());
                 System.out.println("  Service Forward To : "+service.getForwardTo());
+                System.out.println("  Service isGetAllowed : "+service.isGetAllowed());
+                System.out.println("  Service isPostAllowed : "+service.isPostAllowed());
                 System.out.println("-----------------------------");
             }
 }
