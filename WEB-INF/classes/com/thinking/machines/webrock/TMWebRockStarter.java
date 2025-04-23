@@ -84,6 +84,13 @@ for(Method method:methods)
 {
 Path p=method.getAnnotation(Path.class);
 if(p==null) continue;
+
+//giving priority to method level annotation GET/POST
+if(method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.class))
+{
+
+}else if()//in case of no annotaiton present either on class or method allow both
+
 boolean isGetAllowed=method
 Forward forward=method.getAnnotation(Forward.class);
 
