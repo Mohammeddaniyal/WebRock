@@ -8,6 +8,14 @@ import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 public class TMWebRock extends HttpServlet
 {
+    private void handleRequestForwardTo(HttpServletRequest request,HttpServletResponse response,WebRockModel webRockModel,String forwardTo)
+    {
+        try
+        {}catch(Exception e)
+        {
+            
+        }
+    }
     public void doGet(HttpServletRequest request,HttpServletResponse response)
     {
         try{
@@ -17,6 +25,7 @@ public class TMWebRock extends HttpServlet
             String path=request.getPathInfo();
             Service service=webRockModel.getService(path);
             Class serviceClass=service.getServiceClass();
+            String forwardTo=service.getForwardTo();
             if(serviceClass.isAnnotationPresent(POST.class))
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -36,6 +45,7 @@ public class TMWebRock extends HttpServlet
             Object obj=serviceClass.newInstance();
             Object result=serviceMethod.invoke(obj,a,b);
             System.out.println("Result : "+result);
+            if(forwardTo!=null) handleRequestForwardTo(request,response,webRockModel,forwardTo);
         }catch(Exception e){System.out.println(e);}
     }
     public void doPost(HttpServletRequest request,HttpServletResponse response)
@@ -66,7 +76,7 @@ public class TMWebRock extends HttpServlet
             Object obj=serviceClass.newInstance();
             Object result=serviceMethod.invoke(obj,a,b);
             System.out.println("Result : "+result);
- 
+            if(fowardTo!=null) handleRequestForwardTo(request,response,webRockModel,forwardTo);
         }catch(Exception e){System.out.println(e);}
     }
 }
