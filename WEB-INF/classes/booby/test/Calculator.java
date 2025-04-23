@@ -9,6 +9,7 @@ public class Calculator
 @Forward("/calculator/forward")
 public int add(int e,int f)
 {
+    System.out.println("arrived for add");
 return e+f;
 }
 @POST
@@ -30,8 +31,8 @@ public int divide(int e,int f)
 return e/f;
 }
 @Path("/forward")
-public void forwardTo()
+public void forwardTo(int a,int b)
 {
-    System.out.println("Request arrived by forwarding");
+    System.out.println("Request arrived by forwarding : "+a+","+b);
 }
 }
