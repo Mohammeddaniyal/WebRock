@@ -5,6 +5,7 @@ import com.thinking.machines.webrock.annotations.*;
 public class Calculator 
 {
 @GET
+@POST
 @Path("/add")
 @Forward("/calculator/forward")
 public int add(int e,int f)
