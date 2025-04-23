@@ -92,7 +92,9 @@ if(method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.clas
     isPostAllowed=method.isAnnotationPresent(POST.class);
 }else if(isGetAllowed==false && isPostAllowed==false)//in case of no annotaiton present either on class or method allow both
 {
+    System.out.println(path.value());
     isGetAllowed=isPostAllowed=true;
+    System.out.println(isGetAllowed+","+isPostAllowed);
 }
 
 Forward forward=method.getAnnotation(Forward.class);

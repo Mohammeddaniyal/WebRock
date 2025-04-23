@@ -40,6 +40,7 @@ public class TMWebRock extends HttpServlet
         try{
             System.out.println("GET TYPE REQUEST");
             WebRockModel webRockModel=(WebRockModel)getServletContext().getAttribute("webRockModel");
+            webRockModel.print();
             String path=request.getPathInfo();
             Service service=webRockModel.getService(path);
             Class serviceClass=service.getServiceClass();
