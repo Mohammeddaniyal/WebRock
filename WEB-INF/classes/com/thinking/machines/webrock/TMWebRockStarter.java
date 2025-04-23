@@ -78,10 +78,13 @@ for(Method method:methods)
 {
 Path p=method.getAnnotation(Path.class);
 if(p==null) continue;
+Forward f=method.getAnnotation(Forward.class);
+
 Service service=new Service();
 service.setServiceClass(serviceClass);
 service.setService(method);
 service.setPath(path.value()+p.value());
+if(f!=null) service.setForwardTo(f.value());
 logger.info("Path : " + path.value() + p.value());
 System.out.println("Path : "+path.value()+p.value());
 webRockModel.putService(service);
