@@ -44,7 +44,7 @@ public class TMWebRock extends HttpServlet
             Service service=webRockModel.getService(path);
             Class serviceClass=service.getServiceClass();
             String forwardTo=service.getForwardTo();
-            if(!serviceClass.isGetAllowed())
+            if(!service.isGetAllowed())
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 return;
@@ -71,7 +71,7 @@ public class TMWebRock extends HttpServlet
             Service service=webRockModel.getService(path);
             Class serviceClass=service.getServiceClass();
             String forwardTo=service.getForwardTo();
-            if(!serviceClass.isPostAllowed())
+            if(!service.isPostAllowed())
             {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 return;
