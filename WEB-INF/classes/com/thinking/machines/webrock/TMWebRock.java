@@ -13,7 +13,7 @@ public class TMWebRock extends HttpServlet
         try
         {}catch(Exception e)
         {
-            
+            System.out.println(e);  
         }
     }
     public void doGet(HttpServletRequest request,HttpServletResponse response)
