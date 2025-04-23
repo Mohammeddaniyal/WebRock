@@ -73,14 +73,12 @@ WebRockModel webRockModel=(WebRockModel)getServletContext().getAttribute("webRoc
 
 Path path=(Path)serviceClass.getAnnotation(Path.class);
 if(path==null) continue;
-GET get=(GET)serviceClass.getAnnotation(GET.class);
-boolean isGetAllowed=false;
-if(get!=null)
-{
-    isGetAllowed=get.value();
-}
-POST post=(POST)serviceClass.getAnnotation(POST.class);
-boolean 
+
+boolean isGetAllowed=serviceClass.isAnnotationPresent(GET.class);
+
+boolean isPostAllowed=serviceClass.isAnnotationPresent(POST.class);
+
+
 Method []methods=serviceClass.getMethods();
 for(Method method:methods)
 {
