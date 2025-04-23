@@ -5,11 +5,13 @@ public class Service
 private Class serviceClass;
 private  String path;
 private Method service;
+private String forwardTo;
 public Service()
 {
 this.serviceClass=null;
 this.path="";
 this.service=null;
+this.forwardTo=null;
 }
 public void setServiceClass(java.lang.Class serviceClass)
 {
