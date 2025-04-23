@@ -51,6 +51,11 @@ public java.lang.reflect.Method getService()
 {
 return this.service;
 }
+public boolean isGetAllowed()
+{
+    return this.isGetAllowed;
+}
+public 
 public String getForwardTo()
 {
     return this.forwardTo;
