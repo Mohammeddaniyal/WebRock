@@ -84,7 +84,10 @@ for(Method method:methods)
 {
 Path p=method.getAnnotation(Path.class);
 if(p==null) continue;
-
+if(p.value().equals("/forward"))
+{
+    System.out.println("1."+isGetAllowed+","+isPostAllowed);
+}
 //giving priority to method level annotation GET/POST
 if(method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.class))
 {
@@ -97,7 +100,10 @@ if(method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.clas
     isGetAllowed=isPostAllowed=true;
     System.out.println(isGetAllowed+","+isPostAllowed);
 }
-
+if(p.value().equals("/forward"))
+{
+    System.out.println("2. "+isGetAllowed+","+isPostAllowed)
+}
 Forward forward=method.getAnnotation(Forward.class);
 
 Service service=new Service();
