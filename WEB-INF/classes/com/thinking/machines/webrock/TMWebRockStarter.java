@@ -48,6 +48,7 @@ public class TMWebRockStarter extends HttpServlet {
             throw new ServletException("Specified root is not a valid directory: " + absolutePath);
         }
         loadServices(rootFolder);
+        runStartServices();
     }
 
     private void loadServices(File folder) throws ServletException {
@@ -110,11 +111,15 @@ public class TMWebRockStarter extends HttpServlet {
                     service.setIsPostAllowed(isPostAllowed);
                         if (forward != null)
                         service.setForwardTo(forward.value());
-                        service.setRunOnStart(runOnStart);
                     if(runOnStart)
-                    { 
+                    {
+                        boolean valid=isStartUpMethodValid(method);
+                        if(valid)
+                        { 
+                        service.setRunOnStart(runOnStart);
                         service.setPriority(onStartUp.priority());
                         insertRunOnStartServiceByPriority(service);
+                        }
                     }
                     logger.info("Path : " + path.value() + p.value());
                     System.out.println("---------------");
@@ -150,6 +155,13 @@ public class TMWebRockStarter extends HttpServlet {
             return null;
         }
     }
+    private boolean isStartUpMethodValid(Method method)
+    {
+        boolean valid=false;
+        valid=(method.getReturnType().equals(void.class) && method.getParameterCount()==0);
+        System.out.println("Start up method is valid  "+valid+", name :"+  method.getName());
+        return valid;
+    }
     private void insertRunOnStartServiceByPriority(Service service)
     {
         int i=0;
@@ -157,6 +169,20 @@ public class TMWebRockStarter extends HttpServlet {
         {
             i++;
         }
-        runOnStartServicesList.add(i,task);
+        runOnStartServicesList.add(i,service);
+    }
+    private void runStartServices()
+    {
+        try
+        {
+            for(Service service:runOnStartServicesList)
+            {
+            Object object=service.getServiceClass().newInstance();
+            service.getService().invoke(object);
+            }
+        }catch(IllegalAccessException | InvocationTargetException  | InstantiationException exception)
+        {
+            System.out.println(exception);
+        }
     }
 }
