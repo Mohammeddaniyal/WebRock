@@ -8,6 +8,8 @@ private Method service;
 private boolean isGetAllowed;
 private boolean isPostAllowed;
 private String forwardTo;
+private boolean runOnStart;
+private int priority;
 public Service()
 {
 this.serviceClass=null;
