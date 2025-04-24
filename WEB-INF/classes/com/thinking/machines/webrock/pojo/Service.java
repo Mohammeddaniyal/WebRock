@@ -45,7 +45,10 @@ public void setRunOnStart(boolean runOnStart)
 {
     this.runOnStart=runOnStart;
 }
-p
+public void setPriority(int priority)
+{
+    this.priority=priority;
+}
 public java.lang.String getPath()
 {
 return this.path;
@@ -69,5 +72,9 @@ public boolean isPostAllowed()
 public String getForwardTo()
 {
     return this.forwardTo;
+}
+public boolean getRunOnStart()
+{
+    return this.runOnStart;
 }
 }
