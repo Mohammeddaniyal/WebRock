@@ -77,4 +77,8 @@ public boolean getRunOnStart()
 {
     return this.runOnStart;
 }
+public int getPriority()
+{
+    return this.priority;
+}
 }
