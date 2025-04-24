@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.lang.reflect.*;
 import java.io.*;
+import java.util.*;
 import com.thinking.machines.webrock.pojo.*;
 import com.thinking.machines.webrock.model.*;
 import com.thinking.machines.webrock.annotations.*;
@@ -11,7 +12,7 @@ import java.util.logging.*;
 
 public class TMWebRockStarter extends HttpServlet {
     private static final Logger logger = Logger.getLogger(TMWebRockStarter.class.getName());
-
+    private ArrayList<Service> runOnStartServicesList=new ArrayList<>();
     static {
         try {
             // Setup the file handler for logging
@@ -107,9 +108,14 @@ public class TMWebRockStarter extends HttpServlet {
                     service.setPath(path.value() + p.value());
                     service.setIsGetAllowed(isGetAllowed);
                     service.setIsPostAllowed(isPostAllowed);
-                    
-                    if (forward != null)
+                        if (forward != null)
                         service.setForwardTo(forward.value());
+                        service.setRunOnStart(runOnStart);
+                    if(runOnStart)
+                    { 
+                        service.setPriority(onStartUp.priority());
+                        insertRunOnStartServiceByPriority(service);
+                    }
                     logger.info("Path : " + path.value() + p.value());
                     System.out.println("---------------");
                     System.out.println("Path : " + path.value() + p.value());
@@ -143,5 +149,14 @@ public class TMWebRockStarter extends HttpServlet {
             logger.severe("Error loading class: " + e.getMessage());
             return null;
         }
+    }
+    private void insertRunOnStartServiceByPriority(Service service)
+    {
+        int i=0;
+        while(i<runOnStartServicesList.size() && runOnStartServicesList.get(i).getPriority()<=service.getPriority())
+        {
+            i++;
+        }
+        runOnStartServicesList.add(i,task);
     }
 }
