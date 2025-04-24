@@ -41,6 +41,11 @@ public void setForwardTo(String forwardTo)
 {
     this.forwardTo=forwardTo;
 }
+public void setRunOnStart(boolean runOnStart)
+{
+    this.runOnStart=runOnStart;
+}
+p
 public java.lang.String getPath()
 {
 return this.path;
