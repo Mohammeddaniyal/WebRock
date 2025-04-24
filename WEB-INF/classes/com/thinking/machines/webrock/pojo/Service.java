@@ -44,7 +44,7 @@ public void setForwardTo(String forwardTo)
 public void setRunOnStart(boolean runOnStart)
 {
     this.runOnStart=runOnStart;
-}
+}   
 public void setPriority(int priority)
 {
     this.priority=priority;
