@@ -83,7 +83,8 @@ Method []methods=serviceClass.getMethods();
 for(Method method:methods)
 {
 Path p=method.getAnnotation(Path.class);
-if(p==null) continue;
+OnStartUp onStartUp=method.getAnnotation(OnStartUp.class);
+if(p==null && onStartUp==null) continue;
 
 boolean isGetAllowed=isGetAllowedOnClass;
 boolean isPostAllowed=isPostAllowedOnClass;
