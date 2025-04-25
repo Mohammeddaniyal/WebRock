@@ -87,7 +87,7 @@ public class TMWebRockStarter extends HttpServlet {
                     boolean runOnStart = (onStartUp != null);
                     boolean isGetAllowed = isGetAllowedOnClass;
                     boolean isPostAllowed = isPostAllowedOnClass;
-                     // giving priority to method level annotation GET/POST
+                    // giving priority to method level annotation GET/POST
                     if (method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.class)) {
                         System.out.println("Either GET/POST Present : " + p.value());
                         isGetAllowed = method.isAnnotationPresent(GET.class);
@@ -104,37 +104,33 @@ public class TMWebRockStarter extends HttpServlet {
                     if (runOnStart == false) {
                         forward = method.getAnnotation(Forward.class);
                     }
-                     Service service = new Service();
+                    Service service = new Service();
                     service.setServiceClass(serviceClass);
                     service.setService(method);
-                    if(p!=null) ;service.setPath(path.value() + p.value());
-                     service.setIsGetAllowed(isGetAllowed);
+                    try{
+                    if(p!=null) {System.out.println("HELLO");service.setPath(path.value() + p.value());}
+                    }catch(Exception e){System.out.println(e);}
+                    service.setIsGetAllowed(isGetAllowed);
                     service.setIsPostAllowed(isPostAllowed);
-                    
                         if (forward != null)
                         service.setForwardTo(forward.value());
-                    
                     if(runOnStart)
                     {
-                    
                         boolean valid=isStartUpMethodValid(method);
                         if(valid)
                         { 
-                    
                         service.setRunOnStart(runOnStart);
                         service.setPriority(onStartUp.priority());
                         insertRunOnStartServiceByPriority(service);
                         }
-                    
                     }
-                   
                     System.out.println("---------------");
-       if(p!=null)  System.out.println("Path : " + path.value() + p.value());
+                // System.out.println("Path : " + path.value() + p.value());
                     System.out.println(isGetAllowed + "," + isPostAllowed);
                     System.out.println("---------------");
                     webRockModel.putService(service);
                 
-                   
+                  //int x=  methods.length;
                 }
             }
         }
