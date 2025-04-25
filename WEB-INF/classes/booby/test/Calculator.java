@@ -1,4 +1,7 @@
+
 package booby.test;
+import java.lang.reflect.Method;
+
 import com.thinking.machines.webrock.annotations.*;
 @POST
 @Path("/calculator")
@@ -9,6 +12,10 @@ public class Calculator
 @Forward("/calculator/forward")
 public int add(int e,int f)
 {
+   for (Method method : Calculator.class.getDeclaredMethods()) {
+    System.out.println("Method: " + method.getName());
+}
+
     System.out.println("arrived for add");
 return e+f;
 }
@@ -34,5 +41,20 @@ return e/f;
 public void forwardTo(int a,int b)
 {
     System.out.println("Request arrived by forwarding : "+a+","+b);
+}
+@OnStartUp(priority = 1)
+public void hello()
+{
+   System.out.println("HELLO HI EVERYONE");
+}
+@OnStartUp(priority = 3)
+public void hell()
+{
+   System.out.println("HELL YEAH");
+}
+@OnStartUp(priority = 2)
+public void greet()
+{
+   System.out.println("Greetings");
 }
 }
