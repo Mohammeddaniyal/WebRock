@@ -11,18 +11,7 @@ import com.thinking.machines.webrock.annotations.*;
 import java.util.logging.*;
 
 public class TMWebRockStarter extends HttpServlet {
-    private static final Logger logger = Logger.getLogger(TMWebRockStarter.class.getName());
     private ArrayList<Service> runOnStartServicesList=new ArrayList<>();
-    static {
-        try {
-            // Setup the file handler for logging
-            FileHandler fileHandler = new FileHandler("_tmwebrock.log", true); // appends to log file
-            fileHandler.setFormatter(new SimpleFormatter()); // Simple formatter for log messages
-            logger.addHandler(fileHandler); // Add the handler to the logger
-        } catch (IOException e) {
-            e.printStackTrace(); // If logging setup fails, print the stack trace
-        }
-    }
 
     public void init() throws ServletException {
         super.init();
@@ -33,21 +22,20 @@ public class TMWebRockStarter extends HttpServlet {
 
         String rootFolderName = getServletContext().getInitParameter("SERVICE_PACKAGE_PREFIX");
         if (rootFolderName == null) {
-            logger.severe("No root folder specified");
             throw new ServletException("No root folder specified");
         }
         String absolutePath = getServletContext().getRealPath("/WEB-INF/classes/" + rootFolderName);
         if (absolutePath == null) {
-            logger.severe("Root folder not found in web app");
             throw new ServletException("Root folder not found in web app");
         }
 
         File rootFolder = new File(absolutePath);
         if (!rootFolder.exists() || !rootFolder.isDirectory()) {
-            logger.severe("Specified root is not a valid directory: " + absolutePath);
             throw new ServletException("Specified root is not a valid directory: " + absolutePath);
         }
+        System.out.println("calling LoadServices");
         loadServices(rootFolder);
+        System.out.println("calling runStartServices");
         runStartServices();
     }
 
@@ -63,6 +51,7 @@ public class TMWebRockStarter extends HttpServlet {
                 if (!file.getName().endsWith(".class"))
                     continue;
                 System.out.println("Found file: " + file.getAbsolutePath());
+
                 Class serviceClass = getServiceClass(file);
                 if (serviceClass == null)
                     continue;
@@ -76,15 +65,31 @@ public class TMWebRockStarter extends HttpServlet {
 
                 boolean isPostAllowedOnClass = serviceClass.isAnnotationPresent(POST.class);
 
-                Method[] methods = serviceClass.getMethods();
+                Method[] methods = serviceClass.getDeclaredMethods();
+                System.out.println("Size "+methods.length);
+            //try {
+                    serviceClass.getDeclaredMethods();
+            /*/   } catch (ClassNotFoundException e) {
+                    System.out.println("Error forcing class initialization: " + e.getMessage());
+                    logger.severe("Error forcing class initialization: " + e.getMessage());
+                }*/
                 for (Method method : methods) {
-                    Path p = method.getAnnotation(Path.class);
-                    OnStartUp onStartUp = method.getAnnotation(OnStartUp.class);
+                    System.out.println("Comes : "+method.getName());
+                    boolean pathPresent=method.isAnnotationPresent(Path.class);
+                    boolean onStartUpPresent=method.isAnnotationPresent(OnStartUp.class);
+                    if(!pathPresent && !onStartUpPresent) continue;
+                    Path p=null; 
+                    if(pathPresent) p= method.getAnnotation(Path.class);
+                    OnStartUp onStartUp=null;
+                     if(onStartUpPresent) onStartUp= method.getAnnotation(OnStartUp.class);
+                    System.out.println("OnStartup is "+method.isAnnotationPresent(OnStartUp.class));
                     if (p == null && onStartUp == null)
                         continue;
+                        System.out.println("Arrived : "+method.getName());
                     boolean runOnStart = (onStartUp != null);
                     boolean isGetAllowed = isGetAllowedOnClass;
                     boolean isPostAllowed = isPostAllowedOnClass;
+                    System.out.println("door 1");
                     // giving priority to method level annotation GET/POST
                     if (method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.class)) {
                         System.out.println("Either GET/POST Present : " + p.value());
@@ -98,35 +103,47 @@ public class TMWebRockStarter extends HttpServlet {
                         System.out.println(path.value());
                         isGetAllowed = isPostAllowed = true;
                     }
-
+                    System.out.println("door 2");
                     Forward forward = null;
                     if (runOnStart == false) {
                         forward = method.getAnnotation(Forward.class);
                     }
+                    System.out.println("door 3");
                     Service service = new Service();
                     service.setServiceClass(serviceClass);
                     service.setService(method);
-                    service.setPath(path.value() + p.value());
+                    System.out.println("Door 8");
+                    try{
+                    if(path!=null) {System.out.println("HELLO");service.setPath(path.value() + p.value());}
+                    }catch(Exception e){System.out.println(e);}
+                    System.out.println("Door 9");
                     service.setIsGetAllowed(isGetAllowed);
                     service.setIsPostAllowed(isPostAllowed);
+                    System.out.println("Door 10");
                         if (forward != null)
                         service.setForwardTo(forward.value());
+                        System.out.println("Door 11");
                     if(runOnStart)
                     {
+                        System.out.println("Door 5");
                         boolean valid=isStartUpMethodValid(method);
                         if(valid)
                         { 
+                            System.out.println("Door 6");
                         service.setRunOnStart(runOnStart);
                         service.setPriority(onStartUp.priority());
                         insertRunOnStartServiceByPriority(service);
                         }
+                        System.out.println("Door 7");
                     }
-                    logger.info("Path : " + path.value() + p.value());
+                    System.out.println("Door 4");
                     System.out.println("---------------");
                     System.out.println("Path : " + path.value() + p.value());
                     System.out.println(isGetAllowed + "," + isPostAllowed);
                     System.out.println("---------------");
                     webRockModel.putService(service);
+                
+                    int x=  methods.length;
                 }
             }
         }
@@ -139,7 +156,6 @@ public class TMWebRockStarter extends HttpServlet {
             String rootFolderName = getServletContext().getInitParameter("SERVICE_PACKAGE_PREFIX");
             int index = absolutePath.indexOf(rootFolderName + "\\");
             if (index == -1) {
-                logger.severe("Root folder not found in path : " + rootFolderName + " , " + absolutePath);
                 throw new ServletException("Root folder not found in path : " + rootFolderName + " , " + absolutePath);
             }
             // c:\tomcat9\webapps\dan\WEB-INF\classes\booby\com...
@@ -147,11 +163,9 @@ public class TMWebRockStarter extends HttpServlet {
             // index+=rootFolderName.length()+1;
             String packageName = absolutePath.substring(index).replace("\\", ".");
             packageName = packageName.substring(0, packageName.lastIndexOf("."));
-            logger.info("packageName : " + packageName);
             System.out.println("packageName : " + packageName);
             return Class.forName(packageName);
         } catch (Exception e) {
-            logger.severe("Error loading class: " + e.getMessage());
             return null;
         }
     }
@@ -173,10 +187,12 @@ public class TMWebRockStarter extends HttpServlet {
     }
     private void runStartServices()
     {
+        System.out.println(runOnStartServicesList.size());
         try
         {
             for(Service service:runOnStartServicesList)
             {
+                System.out.println("Invoking method : "+service.getService().getName());
             Object object=service.getServiceClass().newInstance();
             service.getService().invoke(object);
             }
