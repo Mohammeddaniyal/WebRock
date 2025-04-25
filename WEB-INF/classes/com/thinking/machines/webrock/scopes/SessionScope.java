@@ -1,5 +1,6 @@
 package com.thinking.machines.webrock.scopes;
 
+import javax.servlet.http.HttpSession;
 public class SessionScope {
     private HttpSession session;
     public void setAttribute(String name,Object object)
