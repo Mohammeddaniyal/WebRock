@@ -83,8 +83,6 @@ public class TMWebRockStarter extends HttpServlet {
                     OnStartUp onStartUp=null;
                      if(onStartUpPresent) onStartUp= method.getAnnotation(OnStartUp.class);
                     System.out.println("OnStartup is "+method.isAnnotationPresent(OnStartUp.class));
-                    if (p == null && onStartUp == null)
-                        continue;
                         System.out.println("Arrived : "+method.getName());
                     boolean runOnStart = (onStartUp != null);
                     boolean isGetAllowed = isGetAllowedOnClass;
@@ -114,7 +112,7 @@ public class TMWebRockStarter extends HttpServlet {
                     service.setService(method);
                     System.out.println("Door 8");
                     try{
-                    if(path!=null) {System.out.println("HELLO");service.setPath(path.value() + p.value());}
+                    if(p!=null) {System.out.println("HELLO");service.setPath(path.value() + p.value());}
                     }catch(Exception e){System.out.println(e);}
                     System.out.println("Door 9");
                     service.setIsGetAllowed(isGetAllowed);
@@ -138,7 +136,7 @@ public class TMWebRockStarter extends HttpServlet {
                     }
                     System.out.println("Door 4");
                     System.out.println("---------------");
-                    System.out.println("Path : " + path.value() + p.value());
+       if(p!=null)  System.out.println("Path : " + path.value() + p.value());
                     System.out.println(isGetAllowed + "," + isPostAllowed);
                     System.out.println("---------------");
                     webRockModel.putService(service);
