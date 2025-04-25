@@ -11,7 +11,7 @@ import com.thinking.machines.webrock.annotations.*;
 import java.util.logging.*;
 
 public class TMWebRockStarter extends HttpServlet {
-    private ArrayList<Service> runOnStartServicesList=new ArrayList<>();
+    private ArrayList<Service> runOnStartServicesList = new ArrayList<>();
 
     public void init() throws ServletException {
         super.init();
@@ -66,24 +66,29 @@ public class TMWebRockStarter extends HttpServlet {
                 boolean isPostAllowedOnClass = serviceClass.isAnnotationPresent(POST.class);
 
                 Method[] methods = serviceClass.getDeclaredMethods();
-                System.out.println("Size "+methods.length);
-            //try {
-                    serviceClass.getDeclaredMethods();
-            /*/   } catch (ClassNotFoundException e) {
-                    System.out.println("Error forcing class initialization: " + e.getMessage());
-                    logger.severe("Error forcing class initialization: " + e.getMessage());
-                }*/
+                System.out.println("Size " + methods.length);
+                // try {
+                serviceClass.getDeclaredMethods();
+                /*
+                 * / } catch (ClassNotFoundException e) {
+                 * System.out.println("Error forcing class initialization: " + e.getMessage());
+                 * logger.severe("Error forcing class initialization: " + e.getMessage());
+                 * }
+                 */
                 for (Method method : methods) {
-                    System.out.println("Comes : "+method.getName());
-                    boolean pathPresent=method.isAnnotationPresent(Path.class);
-                    boolean onStartUpPresent=method.isAnnotationPresent(OnStartUp.class);
-                    if(!pathPresent && !onStartUpPresent) continue;
-                    Path p=null; 
-                    if(pathPresent) p= method.getAnnotation(Path.class);
-                    OnStartUp onStartUp=null;
-                     if(onStartUpPresent) onStartUp= method.getAnnotation(OnStartUp.class);
-                    System.out.println("OnStartup is "+method.isAnnotationPresent(OnStartUp.class));
-                        System.out.println("Arrived : "+method.getName());
+                    System.out.println("Comes : " + method.getName());
+                    boolean pathPresent = method.isAnnotationPresent(Path.class);
+                    boolean onStartUpPresent = method.isAnnotationPresent(OnStartUp.class);
+                    if (!pathPresent && !onStartUpPresent)
+                        continue;
+                    Path p = null;
+                    if (pathPresent)
+                        p = method.getAnnotation(Path.class);
+                    OnStartUp onStartUp = null;
+                    if (onStartUpPresent)
+                        onStartUp = method.getAnnotation(OnStartUp.class);
+                    System.out.println("OnStartup is " + method.isAnnotationPresent(OnStartUp.class));
+                    System.out.println("Arrived : " + method.getName());
                     boolean runOnStart = (onStartUp != null);
                     boolean isGetAllowed = isGetAllowedOnClass;
                     boolean isPostAllowed = isPostAllowedOnClass;
@@ -107,30 +112,33 @@ public class TMWebRockStarter extends HttpServlet {
                     Service service = new Service();
                     service.setServiceClass(serviceClass);
                     service.setService(method);
-                    try{
-                    if(p!=null) {System.out.println("HELLO");service.setPath(path.value() + p.value());}
-                    }catch(Exception e){System.out.println(e);}
+                    try {
+                        if (p != null) {
+                            System.out.println("HELLO");
+                            service.setPath(path.value() + p.value());
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
                     service.setIsGetAllowed(isGetAllowed);
                     service.setIsPostAllowed(isPostAllowed);
-                        if (forward != null)
+                    if (forward != null)
                         service.setForwardTo(forward.value());
-                    if(runOnStart)
-                    {
-                        boolean valid=isStartUpMethodValid(method);
-                        if(valid)
-                        { 
-                        service.setRunOnStart(runOnStart);
-                        service.setPriority(onStartUp.priority());
-                        insertRunOnStartServiceByPriority(service);
+                    if (runOnStart) {
+                        boolean valid = isStartUpMethodValid(method);
+                        if (valid) {
+                            service.setRunOnStart(runOnStart);
+                            service.setPriority(onStartUp.priority());
+                            insertRunOnStartServiceByPriority(service);
                         }
                     }
                     System.out.println("---------------");
-                // System.out.println("Path : " + path.value() + p.value());
+                    if (p != null)
+                        System.out.println("Path : " + path.value() + p.value());
                     System.out.println(isGetAllowed + "," + isPostAllowed);
                     System.out.println("---------------");
                     webRockModel.putService(service);
-                
-                  //int x=  methods.length;
+
                 }
             }
         }
@@ -156,35 +164,32 @@ public class TMWebRockStarter extends HttpServlet {
             return null;
         }
     }
-    private boolean isStartUpMethodValid(Method method)
-    {
-        boolean valid=false;
-        valid=(method.getReturnType().equals(void.class) && method.getParameterCount()==0);
-        System.out.println("Start up method is valid  "+valid+", name :"+  method.getName());
+
+    private boolean isStartUpMethodValid(Method method) {
+        boolean valid = false;
+        valid = (method.getReturnType().equals(void.class) && method.getParameterCount() == 0);
+        System.out.println("Start up method is valid  " + valid + ", name :" + method.getName());
         return valid;
     }
-    private void insertRunOnStartServiceByPriority(Service service)
-    {
-        int i=0;
-        while(i<runOnStartServicesList.size() && runOnStartServicesList.get(i).getPriority()<=service.getPriority())
-        {
+
+    private void insertRunOnStartServiceByPriority(Service service) {
+        int i = 0;
+        while (i < runOnStartServicesList.size()
+                && runOnStartServicesList.get(i).getPriority() <= service.getPriority()) {
             i++;
         }
-        runOnStartServicesList.add(i,service);
+        runOnStartServicesList.add(i, service);
     }
-    private void runStartServices()
-    {
+
+    private void runStartServices() {
         System.out.println(runOnStartServicesList.size());
-        try
-        {
-            for(Service service:runOnStartServicesList)
-            {
-                System.out.println("Invoking method : "+service.getService().getName());
-            Object object=service.getServiceClass().newInstance();
-            service.getService().invoke(object);
+        try {
+            for (Service service : runOnStartServicesList) {
+                System.out.println("Invoking method : " + service.getService().getName());
+                Object object = service.getServiceClass().newInstance();
+                service.getService().invoke(object);
             }
-        }catch(IllegalAccessException | InvocationTargetException  | InstantiationException exception)
-        {
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException exception) {
             System.out.println(exception);
         }
     }
