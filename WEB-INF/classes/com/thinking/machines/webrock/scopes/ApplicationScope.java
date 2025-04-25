@@ -1,5 +1,5 @@
 package com.thinking.machines.webrock.scopes;
-javax.servlet.ServletContext;
+import javax.servlet.ServletContext;
 public class ApplicationScope {
     private ServletContext servletContext;
     
