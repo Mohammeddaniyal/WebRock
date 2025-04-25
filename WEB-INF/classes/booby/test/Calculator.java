@@ -52,6 +52,7 @@ public void hell()
 {
    System.out.println("HELL YEAH");
 }
+@Forward("/calculator/forward")
 @OnStartUp(priority = 2)
 public void greet()
 {
