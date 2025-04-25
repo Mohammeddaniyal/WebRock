@@ -7,7 +7,7 @@ public class ApplicationScope {
     {
         servletContext.setAttribute(name,object);
     }
-    public Object getAttribute(String name);
+    public Object getAttribute(String name)
     {
         return servletContext.getAttribute(name);
     }
