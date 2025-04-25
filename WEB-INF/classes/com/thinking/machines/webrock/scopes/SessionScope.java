@@ -7,7 +7,7 @@ public class SessionScope {
     {
         session.setAttribute(name,object);
     }
-    public Object getAttribute(String name);
+    public Object getAttribute(String name)
     {
         return session.getAttribute(name);
     }
