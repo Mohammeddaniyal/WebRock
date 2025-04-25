@@ -1,11 +1,8 @@
 package com.thinking.machines.webrock.scopes;
-import javax.servlet.*;
+javax.servlet.ServletContext;
 public class ApplicationScope {
     private ServletContext servletContext;
-    public ApplicationScope()
-    {
-        this.servletContext=getServletContext();
-    }
+    
     public void setAttribute(String name,Object object)
     {
         servletContext.setAttribute(name,object);
