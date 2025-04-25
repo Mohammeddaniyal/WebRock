@@ -87,8 +87,7 @@ public class TMWebRockStarter extends HttpServlet {
                     boolean runOnStart = (onStartUp != null);
                     boolean isGetAllowed = isGetAllowedOnClass;
                     boolean isPostAllowed = isPostAllowedOnClass;
-                    System.out.println("door 1");
-                    // giving priority to method level annotation GET/POST
+                     // giving priority to method level annotation GET/POST
                     if (method.isAnnotationPresent(GET.class) || method.isAnnotationPresent(POST.class)) {
                         System.out.println("Either GET/POST Present : " + p.value());
                         isGetAllowed = method.isAnnotationPresent(GET.class);
@@ -101,47 +100,41 @@ public class TMWebRockStarter extends HttpServlet {
                         System.out.println(path.value());
                         isGetAllowed = isPostAllowed = true;
                     }
-                    System.out.println("door 2");
                     Forward forward = null;
                     if (runOnStart == false) {
                         forward = method.getAnnotation(Forward.class);
                     }
-                    System.out.println("door 3");
-                    Service service = new Service();
+                     Service service = new Service();
                     service.setServiceClass(serviceClass);
                     service.setService(method);
-                    System.out.println("Door 8");
-                    try{
-                    if(p!=null) {System.out.println("HELLO");service.setPath(path.value() + p.value());}
-                    }catch(Exception e){System.out.println(e);}
-                    System.out.println("Door 9");
-                    service.setIsGetAllowed(isGetAllowed);
+                    if(p!=null) ;service.setPath(path.value() + p.value());
+                     service.setIsGetAllowed(isGetAllowed);
                     service.setIsPostAllowed(isPostAllowed);
-                    System.out.println("Door 10");
+                    
                         if (forward != null)
                         service.setForwardTo(forward.value());
-                        System.out.println("Door 11");
+                    
                     if(runOnStart)
                     {
-                        System.out.println("Door 5");
+                    
                         boolean valid=isStartUpMethodValid(method);
                         if(valid)
                         { 
-                            System.out.println("Door 6");
+                    
                         service.setRunOnStart(runOnStart);
                         service.setPriority(onStartUp.priority());
                         insertRunOnStartServiceByPriority(service);
                         }
-                        System.out.println("Door 7");
+                    
                     }
-                    System.out.println("Door 4");
+                   
                     System.out.println("---------------");
        if(p!=null)  System.out.println("Path : " + path.value() + p.value());
                     System.out.println(isGetAllowed + "," + isPostAllowed);
                     System.out.println("---------------");
                     webRockModel.putService(service);
                 
-                    int x=  methods.length;
+                   
                 }
             }
         }
