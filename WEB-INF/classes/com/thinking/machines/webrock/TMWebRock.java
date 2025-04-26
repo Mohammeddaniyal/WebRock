@@ -3,14 +3,45 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.lang.reflect.*;
 import com.thinking.machines.webrock.pojo.Service;
+import com.thinking.machines.webrock.scopes.SessionScope;
 import com.thinking.machines.webrock.annotations.POST;
 import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 public class TMWebRock extends HttpServlet
 {
+    private Method getMethod(Class serviceClass,String name)
+    {
+        try{
+            return serviceClass.getMethod(name);
+        }catch(NoSuchMethodException noSuchMethodException)
+        {
+            return null;
+        }
+    }
     private void handleInjection(HttpServletRequest request, Service service , Class serviceClass) {
         try {
-            
+            Method method;
+            if(service.getInjectSessionScope())
+            {
+                method=getMethod("setSessionScope");
+                //if setter method not found ignore
+                if(method!=null)
+                {
+                    SessionScope sessionScope=new SessionScope();
+                }
+            }
+            if(service.getInjectApplicationScope())
+            {
+
+            }
+            if(service.getInjectRequestScope())
+            {
+
+            }
+            if(service.getInjectApplicationDirectory())
+            {
+                
+            }
         } catch (Exception e) {
             System.out.println(e);
         }
