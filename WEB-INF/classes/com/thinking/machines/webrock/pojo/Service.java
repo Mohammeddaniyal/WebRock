@@ -25,6 +25,10 @@ public class Service {
         this.isPostAllowed = false;
         this.runOnStart = false;
         this.priority = 0;
+        this.injectSessionScope=false;
+        this.injectApplicationScope=false;
+        thisinjectRequestScope=false;
+        this.injectApplicationDirectory=false;
     }
 
     public void setServiceClass(java.lang.Class serviceClass) {
