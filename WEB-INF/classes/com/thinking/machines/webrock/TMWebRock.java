@@ -25,7 +25,7 @@ public class TMWebRock extends HttpServlet
             Method method;
             if(service.getInjectSessionScope())
             {
-                method=getMethod("setSessionScope",SessionScope.class);
+                method=getMethod(serviceClass, "setSessionScope",SessionScope.class);
                 //if setter method not found ignore
                 if(method!=null)
                 {
@@ -35,7 +35,7 @@ public class TMWebRock extends HttpServlet
             }
             if(service.getInjectApplicationScope())
             {
-                method=getMethod("setApplicationScope",ApplicationScope.class);
+                method=getMethod(serviceClass,"setApplicationScope",ApplicationScope.class);
                 //if setter method not found ignore
                 if(method!=null)
                 {
@@ -45,7 +45,7 @@ public class TMWebRock extends HttpServlet
              }
             if(service.getInjectRequestScope())
             {
-                method=getMethod("setRequestScope",RequestScope.class);
+                method=getMethod(serviceClass, "setRequestScope",RequestScope.class);
                 //if setter method not found ignore
                 if(method!=null)
                 {
