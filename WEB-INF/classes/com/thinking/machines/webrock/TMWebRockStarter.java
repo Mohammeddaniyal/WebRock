@@ -18,8 +18,7 @@ public class TMWebRockStarter extends HttpServlet {
         System.out.println("hi");
         WebRockModel webRockModel = new WebRockModel();
         getServletContext().setAttribute("webRockModel", webRockModel);
-        getServletContext().setAttribute("hello", "How are you");
-
+        
         String rootFolderName = getServletContext().getInitParameter("SERVICE_PACKAGE_PREFIX");
         if (rootFolderName == null) {
             throw new ServletException("No root folder specified");
@@ -64,6 +63,14 @@ public class TMWebRockStarter extends HttpServlet {
                 boolean isGetAllowedOnClass = serviceClass.isAnnotationPresent(GET.class);
 
                 boolean isPostAllowedOnClass = serviceClass.isAnnotationPresent(POST.class);
+
+                boolean injectSessionScope = serviceClass.isAnnotationPresent(InjectSessionScope.class);
+
+                boolean injectApplicationScope = serviceClass.isAnnotationPresent(InjectApplicationScope.class);
+
+                boolean injectRequestScope = serviceClass.isAnnotationPresent(InjectRequestScope.class);
+
+                boolean injectApplicationDirectory = serviceClass.isAnnotationPresent(InjectApplicationDirectory.class);
 
                 Method[] methods = serviceClass.getDeclaredMethods();
                 System.out.println("Size " + methods.length);
