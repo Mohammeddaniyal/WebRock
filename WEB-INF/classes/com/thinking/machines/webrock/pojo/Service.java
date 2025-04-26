@@ -11,6 +11,10 @@ public class Service {
     private String forwardTo;
     private boolean runOnStart;
     private int priority;
+    private boolean injectSessionScope;
+    private boolean injectApplicationScope;
+    private boolean injectRequestScope;
+    private boolean injectApplicationDirectory;
 
     public Service() {
         this.serviceClass = null;
