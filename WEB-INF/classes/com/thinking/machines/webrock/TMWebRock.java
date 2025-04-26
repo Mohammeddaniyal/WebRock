@@ -61,12 +61,10 @@ public class TMWebRock extends HttpServlet
                 method=getMethod(serviceClass,"setApplicationDirectory",ApplicationDirectory.class);
                 if(method!=null)
                 {
-                    System.out.println("Set application directory method found");
                     String directoryPath=getServletContext().getRealPath("/");
                     File directory=new File(directoryPath); 
                     ApplicationDirectory applicationDirectory=new ApplicationDirectory(directory);
                     method.invoke(object, applicationDirectory);
-                    System.out.println("Done calling");
                 }
             }
         } catch (Exception e) {
@@ -157,7 +155,11 @@ public class TMWebRock extends HttpServlet
             Object obj=serviceClass.newInstance();
             Object result=serviceMethod.invoke(obj,a,b);
             System.out.println("Result : "+result);
-            if(forwardTo!=null) handleRequestForwardTo(request,response,webRockModel,forwardTo);
-        }catch(Exception e){System.out.println(e);}
+            if(forwardTo!=null) 
+            {
+                handleInjection(request,service,serviceClass,obj);
+                handleRequestForwardTo(request,response,webRockModel,forwardTo);
+            }
+            }catch(Exception e){System.out.println(e);}
     }
 }
