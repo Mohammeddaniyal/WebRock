@@ -1,4 +1,6 @@
 package com.thinking.machines.webrock;
+
+import java.io.File;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.lang.reflect.*;
@@ -59,10 +61,12 @@ public class TMWebRock extends HttpServlet
                 method=getMethod(serviceClass,"setApplicationDirectory",ApplicationDirectory.class);
                 if(method!=null)
                 {
+                    System.out.println("Set application directory method found");
                     String directoryPath=getServletContext().getRealPath("/");
                     File directory=new File(directoryPath); 
                     ApplicationDirectory applicationDirectory=new ApplicationDirectory(directory);
                     method.invoke(object, applicationDirectory);
+                    System.out.println("Done calling");
                 }
             }
         } catch (Exception e) {
