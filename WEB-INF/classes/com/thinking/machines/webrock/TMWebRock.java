@@ -3,44 +3,60 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.lang.reflect.*;
 import com.thinking.machines.webrock.pojo.Service;
+import com.thinking.machines.webrock.scopes.ApplicationScope;
+import com.thinking.machines.webrock.scopes.RequestScope;
 import com.thinking.machines.webrock.scopes.SessionScope;
 import com.thinking.machines.webrock.annotations.POST;
 import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 public class TMWebRock extends HttpServlet
 {
-    private Method getMethod(Class serviceClass,String name)
+    private Method getMethod(Class serviceClass,String name,Class paramType)
     {
         try{
-            return serviceClass.getMethod(name);
+            return serviceClass.getMethod(name,paramType);
         }catch(NoSuchMethodException noSuchMethodException)
         {
             return null;
         }
     }
-    private void handleInjection(HttpServletRequest request, Service service , Class serviceClass) {
+    private void handleInjection(HttpServletRequest request, Service service , Class serviceClass,Object object){
         try {
             Method method;
             if(service.getInjectSessionScope())
             {
-                method=getMethod("setSessionScope");
+                method=getMethod("setSessionScope",SessionScope.class);
                 //if setter method not found ignore
                 if(method!=null)
                 {
-                    SessionScope sessionScope=new SessionScope();
+                    SessionScope sessionScope=new SessionScope(request.getSession());
+                    method.invoke(object, sessionScope);
                 }
             }
             if(service.getInjectApplicationScope())
             {
-
-            }
+                method=getMethod("setApplicationScope",ApplicationScope.class);
+                //if setter method not found ignore
+                if(method!=null)
+                {
+                    ApplicationScope applicationScope=new ApplicationScope(getServletContext());
+                    method.invoke(object, applicationScope);
+                }
+             }
             if(service.getInjectRequestScope())
             {
+                method=getMethod("setRequestScope",RequestScope.class);
+                //if setter method not found ignore
+                if(method!=null)
+                {
+                    RequestScope requestScope=new RequestScope(request);
+                    method.invoke(object, requestScope);
+                }
 
             }
             if(service.getInjectApplicationDirectory())
             {
-                
+                //will handle this later
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -101,7 +117,7 @@ public class TMWebRock extends HttpServlet
             System.out.println("Result : "+result);
             if(forwardTo!=null)
             {
-                handleInjection(request,service,serviceClass);
+                handleInjection(request,service,serviceClass,obj);
                 handleRequestForwardTo(request,response,webRockModel,forwardTo);
             } 
         }catch(Exception e){System.out.println(e);}
