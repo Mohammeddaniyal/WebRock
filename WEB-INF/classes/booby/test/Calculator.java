@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 
 import com.thinking.machines.webrock.annotations.*;
 @POST
+@InjectApplicationDirectory
+@InjectRequestScope
 @Path("/calculator")
 public class Calculator 
 {
