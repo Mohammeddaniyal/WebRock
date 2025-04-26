@@ -3,6 +3,11 @@ package com.thinking.machines.webrock.scopes;
 import javax.servlet.http.HttpServletRequest;
 public class RequestScope {
     HttpServletRequest request;
+
+    public RequestScope(HttpServletRequest request)
+    {
+        this.request=request;
+    }
     public void setAttribute(String name,Object object)
     {
         request.setAttribute(name,object);
