@@ -56,7 +56,14 @@ public class TMWebRock extends HttpServlet
             }
             if(service.getInjectApplicationDirectory())
             {
-                //will handle this later
+                method=getMethod(serviceClass,"setApplicationDirectory",ApplicationDirectory.class);
+                if(method!=null)
+                {
+                    String directoryPath=getServletContext().getRealPath("/");
+                    File directory=new File(directoryPath); 
+                    ApplicationDirectory applicationDirectory=new ApplicationDirectory(directory);
+                    method.invoke(object, applicationDirectory);
+                }
             }
         } catch (Exception e) {
             System.out.println(e);
