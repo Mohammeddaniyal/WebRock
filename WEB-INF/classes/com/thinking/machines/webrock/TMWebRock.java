@@ -8,6 +8,14 @@ import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 public class TMWebRock extends HttpServlet
 {
+    private void handleInjection(HttpServletRequest request, Service service , Class serviceClass) {
+        try {
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     private void handleRequestForwardTo(HttpServletRequest request,HttpServletResponse response,WebRockModel webRockModel,String forwardTo)
     {
         try
@@ -60,7 +68,11 @@ public class TMWebRock extends HttpServlet
             Object obj=serviceClass.newInstance();
             Object result=serviceMethod.invoke(obj,a,b);
             System.out.println("Result : "+result);
-            if(forwardTo!=null) handleRequestForwardTo(request,response,webRockModel,forwardTo);
+            if(forwardTo!=null)
+            {
+                handleInjection(request,service,serviceClass);
+                handleRequestForwardTo(request,response,webRockModel,forwardTo);
+            } 
         }catch(Exception e){System.out.println(e);}
     }
     public void doPost(HttpServletRequest request,HttpServletResponse response)
