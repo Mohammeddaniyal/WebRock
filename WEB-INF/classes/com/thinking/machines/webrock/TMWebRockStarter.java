@@ -24,6 +24,9 @@ public class TMWebRockStarter extends HttpServlet {
             throw new ServletException("No root folder specified");
         }
         String absolutePath = getServletContext().getRealPath("/WEB-INF/classes/" + rootFolderName);
+        System.out.println("Absolute Path : "+absolutePath);
+        System.out.println("Path : "+getServletContext().getRealPath("/"));
+        
         if (absolutePath == null) {
             throw new ServletException("Root folder not found in web app");
         }
