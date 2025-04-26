@@ -31,8 +31,8 @@ public class Service {
         this.serviceClass = serviceClass;
     }
 
-    public java.lang.Class getServiceClass() {
-        return this.serviceClass;
+    public void setService(java.lang.reflect.Method service) {
+        this.service = service;
     }
 
     public void setPath(java.lang.String path) {
@@ -59,12 +59,32 @@ public class Service {
         this.priority = priority;
     }
 
+    public void setInjectSessionScope(boolean injectSessionScope)
+    {
+        this.injectSessionScope=injectSessionScope;
+    }
+
+    public void setInjectApplicationScope(boolean injectApplicationScope)
+    {
+        this.injectApplicationScope=injectApplicationScope;
+    }
+
+    public void setInjectRequestScope(boolean injectRequestScope)
+    {
+        this.injectRequestScope=injectRequestScope;
+    }
+
+    public void setInjectApplicationDirectory(boolean injectApplicationDirectory)
+    {
+        this.injectApplicationDirectory=injectApplicationDirectory;
+    }
+
     public java.lang.String getPath() {
         return this.path;
     }
 
-    public void setService(java.lang.reflect.Method service) {
-        this.service = service;
+    public java.lang.Class getServiceClass() {
+        return this.serviceClass;
     }
 
     public java.lang.reflect.Method getService() {
@@ -89,5 +109,25 @@ public class Service {
 
     public int getPriority() {
         return this.priority;
+    }
+
+    public boolean getInjectSessionScope()
+    {
+        return this.injectSessionScope;
+    }
+
+    public boolean getInjectApplicationScope()
+    {
+        return this.injectApplicationScope;
+    }
+
+    public boolean getInjectRequestScope()
+    {
+        return this.injectRequestScope;
+    }
+
+    public boolean getInjectApplicationDirectory()
+    {
+        return this.injectApplicationDirectory;
     }
 }
