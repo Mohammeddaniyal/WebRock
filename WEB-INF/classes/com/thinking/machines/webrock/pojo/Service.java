@@ -27,7 +27,7 @@ public class Service {
         this.priority = 0;
         this.injectSessionScope=false;
         this.injectApplicationScope=false;
-        thisinjectRequestScope=false;
+        this.injectRequestScope=false;
         this.injectApplicationDirectory=false;
     }
 
