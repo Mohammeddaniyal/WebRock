@@ -129,6 +129,10 @@ public class TMWebRockStarter extends HttpServlet {
                     }
                     service.setIsGetAllowed(isGetAllowed);
                     service.setIsPostAllowed(isPostAllowed);
+                    service.setInjectSessionScope(injectSessionScope);
+                    service.setInjectApplicationScope(injectApplicationScope);
+                    service.setInjectRequestScope(injectRequestScope);
+                    service.setInjectApplicationDirectory(injectApplicationDirectory);
                     if (forward != null)
                         service.setForwardTo(forward.value());
                     if (runOnStart) {
