@@ -13,9 +13,15 @@ import com.thinking.machines.webrock.scopes.RequestScope;
 @Path("/calculator")
 public class Calculator 
 {
+   @Autowired(name = "std")
+   private Student stu;
    private RequestScope requestScope;
    private ApplicationScope applicationScope;
    private ApplicationDirectory applicationDirectory;
+   public void setStudent()
+   {
+      
+   }
    public void setRequestScope(RequestScope requestScope)
    {
       System.out.println("Setting requestScope " +requestScope);
