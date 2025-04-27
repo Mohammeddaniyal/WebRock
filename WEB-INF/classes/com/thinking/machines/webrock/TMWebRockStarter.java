@@ -8,6 +8,8 @@ import java.util.*;
 import com.thinking.machines.webrock.pojo.*;
 import com.thinking.machines.webrock.model.*;
 import com.thinking.machines.webrock.annotations.*;
+import com.thinking.machines.webrock.annotations.Autowired;
+
 import java.util.logging.*;
 
 public class TMWebRockStarter extends HttpServlet {
@@ -75,17 +77,45 @@ public class TMWebRockStarter extends HttpServlet {
 
                 boolean injectApplicationDirectory = serviceClass.isAnnotationPresent(InjectApplicationDirectory.class);
 
+              //before creating service object and putting them into hashamp
+              //create List of autowired properties
+              Field[] fields=serviceClass.getDeclaredFields();
+                ArrayList<AutowiredInfo> autowiredList=new ArrayList<>();
+              for(Field field:fields)
+              {
+                Autowired autowired=field.getAnnotation(Autowired.class);
+                if(autowired!=null)
+                {
+                    System.out.println("Field with autowired : "+field.getName())
+                    System.out.println("Autowired value : "+autowired.name());
+                    String beanName=autowired.name();
+                    String fieldName=field.getName();
+                    String setterMethodName="set"+fieldName.substring(0,1).toUpperCase()+fieldName.substring(1);
+                    System.out.println("Setter method name : "+setterMethodName);
+                    Class<?> fieldTypeClass=filed.getType();
+                    Method setterMethod=null;
+                    try
+                    {
+                    setterMethod=serviceClass.getMethod(setterMethodName,fieldTypeClass);
+                    System.out.println("Got setter method : "+method.getName());
+                    }catch(NoSuchMethodException noSuchMethodException)
+                    {
+                        System.out.println("Method not found(setterMethod)");
+                        method=null;
+                    }
+                    // now create the objec of AutowiredInfo
+                    AutowiredInfo autowiredInfo=new AutowiredInfo(beanName, field, setterMethod);
+                    autowiredList.add(autowiredInfo);
+                }
+
+
+                
+              }
+              
                 Method[] methods = serviceClass.getDeclaredMethods();
-                System.out.println("Size " + methods.length);
-                // try {
                 serviceClass.getDeclaredMethods();
-                /*
-                 * / } catch (ClassNotFoundException e) {
-                 * System.out.println("Error forcing class initialization: " + e.getMessage());
-                 * logger.severe("Error forcing class initialization: " + e.getMessage());
-                 * }
-                 */
-                for (Method method : methods) {
+             
+                 for (Method method : methods) {
                     System.out.println("Comes : " + method.getName());
                     boolean pathPresent = method.isAnnotationPresent(Path.class);
                     boolean onStartUpPresent = method.isAnnotationPresent(OnStartUp.class);
@@ -136,6 +166,7 @@ public class TMWebRockStarter extends HttpServlet {
                     service.setInjectApplicationScope(injectApplicationScope);
                     service.setInjectRequestScope(injectRequestScope);
                     service.setInjectApplicationDirectory(injectApplicationDirectory);
+                    service.setAutowiredList(autowiredList);
                     if (forward != null)
                         service.setForwardTo(forward.value());
                     if (runOnStart) {
