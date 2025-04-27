@@ -2,13 +2,35 @@
 package booby.test;
 import java.lang.reflect.Method;
 
+import com.thinking.machines.webrock.ApplicationDirectory;
 import com.thinking.machines.webrock.annotations.*;
+import com.thinking.machines.webrock.scopes.ApplicationScope;
+import com.thinking.machines.webrock.scopes.RequestScope;
 @POST
-@InjectApplicationDirectory
 @InjectRequestScope
+@InjectApplicationScope
+@InjectApplicationDirectory
 @Path("/calculator")
 public class Calculator 
 {
+   private RequestScope requestScope;
+   private ApplicationScope applicationScope;
+   private ApplicationDirectory applicationDirectory;
+   public void setRequestScope(RequestScope requestScope)
+   {
+      System.out.println("Setting requestScope " +requestScope);
+      this.requestScope=requestScope;
+   }
+   public void setApplicationDirectory(ApplicationDirectory applicationDirectory)
+   {
+      System.out.println("Setting Application directory, the real path is : "+applicationDirectory.getDirectory().getAbsolutePath());
+      this.applicationDirectory=applicationDirectory;
+   }
+   public void setApplicationScope(ApplicationScope applicationScope)
+   {
+      System.out.println("Setting application scope " + applicationScope);
+      this.applicationScope=applicationScope;
+   }
 @GET
 @Path("/add")
 @Forward("/calculator/forward")
