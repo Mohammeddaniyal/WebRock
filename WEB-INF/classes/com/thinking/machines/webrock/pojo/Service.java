@@ -1,6 +1,7 @@
 package com.thinking.machines.webrock.pojo;
 
 import java.lang.reflect.*;
+import java.util.List;
 
 public class Service {
     private Class serviceClass;
@@ -15,6 +16,7 @@ public class Service {
     private boolean injectApplicationScope;
     private boolean injectRequestScope;
     private boolean injectApplicationDirectory;
+    private List<Autowired> autowiredList;
 
     public Service() {
         this.serviceClass = null;
@@ -29,6 +31,7 @@ public class Service {
         this.injectApplicationScope=false;
         this.injectRequestScope=false;
         this.injectApplicationDirectory=false;
+        this.autowiredList=null;
     }
 
     public void setServiceClass(java.lang.Class serviceClass) {
@@ -83,6 +86,11 @@ public class Service {
         this.injectApplicationDirectory=injectApplicationDirectory;
     }
 
+    public void setAutowiredList(List<Autowired> autowiredList)
+    {
+        this.autowiredList=autowiredList;
+    }
+
     public java.lang.String getPath() {
         return this.path;
     }
@@ -133,5 +141,10 @@ public class Service {
     public boolean getInjectApplicationDirectory()
     {
         return this.injectApplicationDirectory;
+    }
+
+    public List<Autowired> getAutowiredList()
+    {
+        return this.autowiredList;
     }
 }
