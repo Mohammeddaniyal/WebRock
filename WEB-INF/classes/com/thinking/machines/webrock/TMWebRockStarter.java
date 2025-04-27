@@ -177,11 +177,12 @@ public class TMWebRockStarter extends HttpServlet {
                             insertRunOnStartServiceByPriority(service);
                         }
                     }
+                    /*
                     System.out.println("---------------");
                     if (p != null)
                         System.out.println("Path : " + path.value() + p.value());
                     System.out.println(isGetAllowed + "," + isPostAllowed);
-                    System.out.println("---------------");
+                    System.out.println("---------------");*/
                     webRockModel.putService(service);
 
                 }
