@@ -1,7 +1,7 @@
 package com.thinking.machines.webrock.pojo;
 
 import java.lang.reflect.*;
-public class Autiwired {
+public class Autowired {
     private Field autowiredField;
     private Method setterMethod;
     public Autowired(Field autowiredField,Method setterMethod)
