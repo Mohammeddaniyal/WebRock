@@ -86,22 +86,22 @@ public class TMWebRockStarter extends HttpServlet {
                 Autowired autowired=field.getAnnotation(Autowired.class);
                 if(autowired!=null)
                 {
-                    System.out.println("Field with autowired : "+field.getName())
+                    System.out.println("Field with autowired : "+field.getName());
                     System.out.println("Autowired value : "+autowired.name());
                     String beanName=autowired.name();
                     String fieldName=field.getName();
                     String setterMethodName="set"+fieldName.substring(0,1).toUpperCase()+fieldName.substring(1);
                     System.out.println("Setter method name : "+setterMethodName);
-                    Class<?> fieldTypeClass=filed.getType();
+                    Class<?> fieldTypeClass=field.getType();
                     Method setterMethod=null;
                     try
                     {
                     setterMethod=serviceClass.getMethod(setterMethodName,fieldTypeClass);
-                    System.out.println("Got setter method : "+method.getName());
+                    System.out.println("Got setter method : "+setterMethod.getName());
                     }catch(NoSuchMethodException noSuchMethodException)
                     {
                         System.out.println("Method not found(setterMethod)");
-                        method=null;
+                        setterMethod=null;
                     }
                     // now create the objec of AutowiredInfo
                     AutowiredInfo autowiredInfo=new AutowiredInfo(beanName, field, setterMethod);
