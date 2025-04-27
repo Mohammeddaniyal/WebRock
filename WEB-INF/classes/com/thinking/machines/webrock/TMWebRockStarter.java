@@ -89,10 +89,10 @@ public class TMWebRockStarter extends HttpServlet {
                     System.out.println("Field with autowired : "+field.getName());
                     System.out.println("Autowired value : "+autowired.name());
                     String beanName=autowired.name();
-                    String fieldName=field.getName();
+                    Class<?> fieldTypeClass=field.getType();
+                    String fieldName=fieldTypeClass.getSimpleName();
                     String setterMethodName="set"+fieldName.substring(0,1).toUpperCase()+fieldName.substring(1);
                     System.out.println("Setter method name : "+setterMethodName);
-                    Class<?> fieldTypeClass=field.getType();
                     Method setterMethod=null;
                     try
                     {
