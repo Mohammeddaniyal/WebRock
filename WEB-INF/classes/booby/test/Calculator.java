@@ -18,9 +18,9 @@ public class Calculator
    private RequestScope requestScope;
    private ApplicationScope applicationScope;
    private ApplicationDirectory applicationDirectory;
-   public void setStudent()
+   public void setStudent(String string)
    {
-      
+
    }
    public void setRequestScope(RequestScope requestScope)
    {
