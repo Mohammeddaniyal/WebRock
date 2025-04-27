@@ -1,10 +1,10 @@
 package com.thinking.machines.webrock.pojo;
 
 import java.lang.reflect.*;
-public class Autowired {
+public class AutowiredInfo {
     private Field autowiredField;
     private Method setterMethod;
-    public Autowired(Field autowiredField,Method setterMethod)
+    public AutowiredInfo(Field autowiredField,Method setterMethod)
     {
         this.autowiredField=autowiredField;
         this.setterMethod=setterMethod;

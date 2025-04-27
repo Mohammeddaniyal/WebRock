@@ -16,7 +16,7 @@ public class Service {
     private boolean injectApplicationScope;
     private boolean injectRequestScope;
     private boolean injectApplicationDirectory;
-    private List<Autowired> autowiredList;
+    private List<AutowiredInfo> autowiredList;
 
     public Service() {
         this.serviceClass = null;
@@ -86,7 +86,7 @@ public class Service {
         this.injectApplicationDirectory=injectApplicationDirectory;
     }
 
-    public void setAutowiredList(List<Autowired> autowiredList)
+    public void setAutowiredList(List<AutowiredInfo> autowiredList)
     {
         this.autowiredList=autowiredList;
     }
@@ -143,7 +143,7 @@ public class Service {
         return this.injectApplicationDirectory;
     }
 
-    public List<Autowired> getAutowiredList()
+    public List<AutowiredInfo> getAutowiredList()
     {
         return this.autowiredList;
     }
