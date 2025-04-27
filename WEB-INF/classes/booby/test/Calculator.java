@@ -6,7 +6,7 @@ import com.thinking.machines.webrock.ApplicationDirectory;
 import com.thinking.machines.webrock.annotations.*;
 import com.thinking.machines.webrock.scopes.ApplicationScope;
 import com.thinking.machines.webrock.scopes.RequestScope;
-@POST
+@GET
 @InjectRequestScope
 @InjectApplicationScope
 @InjectApplicationDirectory
@@ -14,13 +14,16 @@ import com.thinking.machines.webrock.scopes.RequestScope;
 public class Calculator 
 {
    @Autowired(name = "std")
-   private Student stu;
+   private Student student;
    private RequestScope requestScope;
    private ApplicationScope applicationScope;
    private ApplicationDirectory applicationDirectory;
-   public void setStudent(String string)
+   public void setStudent(Student student)
    {
-
+      System.out.println("STUDENT "+student);
+      this.student=student;
+      System.out.println("Student Data ");
+      System.out.println("Roll number : "+student.getRollNumber()+", Name : "+student.getName());
    }
    public void setRequestScope(RequestScope requestScope)
    {
@@ -82,8 +85,7 @@ public void hell()
 {
    System.out.println("HELL YEAH");
 }
-@Forward("/calculator/forward")
-@OnStartUp(priority = 2)
+@Path("/greet")
 public void greet()
 {
    System.out.println("Greetings");
