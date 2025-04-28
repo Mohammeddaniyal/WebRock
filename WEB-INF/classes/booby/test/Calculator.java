@@ -42,7 +42,7 @@ public class Calculator
    }
 @GET
 @Path("/add")
-@Forward("/calculator/forward")
+@Forward("/calculator/result")
 public int add(int e,int f)
 {
    for (Method method : Calculator.class.getDeclaredMethods()) {
@@ -75,19 +75,46 @@ public void forwardTo(int a,int b)
 {
     System.out.println("Request arrived by forwarding : "+a+","+b);
 }
-@OnStartUp(priority = 1)
+@Path("/hello")
 public void hello()
 {
    System.out.println("HELLO HI EVERYONE");
 }
-@OnStartUp(priority = 3)
+@Path("/hell")
+@Forward("/calculator/hello")
 public void hell()
 {
    System.out.println("HELL YEAH");
 }
 @Path("/greet")
-public void greet()
+@Forward("/calculator/hell")
+public void greet(int a,int b)
 {
    System.out.println("Greetings");
+}
+@GET
+@Path("/result")
+@Forward("/calculator/greet")
+public void showResult(int result)
+{
+   System.out.println("The request is forwarded to showResult and result is "+result);
+}
+@GET
+@Forward("/calculator/studentTest")
+@Path("/addStudent")
+public Student addStudent(int a,int b)
+{
+   System.out.println("Add Student got invoked");
+Student s=new Student(101,"Daniyal Ali");
+System.out.println("Student created "+s);
+return s;
+}
+
+@GET
+@Path("/studentTest")
+public void studentTest(String s)
+{
+   System.out.println("Student arrived");
+   //System.out.println(s.getRollNumber()+","+s.getName());
 }
 }
