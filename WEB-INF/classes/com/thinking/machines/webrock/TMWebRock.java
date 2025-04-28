@@ -11,6 +11,7 @@ import com.thinking.machines.webrock.scopes.ApplicationScope;
 import com.thinking.machines.webrock.scopes.RequestScope;
 import com.thinking.machines.webrock.scopes.SessionScope;
 import com.thinking.machines.webrock.annotations.POST;
+import com.thinking.machines.webrock.exceptions.ServiceException;
 import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 public class TMWebRock extends HttpServlet
@@ -77,27 +78,60 @@ public class TMWebRock extends HttpServlet
         }
     }
 
-    private void handleRequestForwardTo(HttpServletRequest request,HttpServletResponse response,WebRockModel webRockModel,String forwardTo)
+    private void handleRequestForwardTo(HttpServletRequest request,HttpServletResponse response,WebRockModel webRockModel,String forwardTo,Object arg) throws ServiceException
     {
         try
         {
-            boolean exists=(webRockModel.getService(forwardTo)!=null);
+            Service service=webRockModel.getService(forwardTo);
+            boolean exists=((service)!=null);
             RequestDispatcher requestDispatcher=null;
             if(exists)
             {
+                //what ever that method returns which forward the request to this service
+                //pass the returned result as argument to the service parameter
+                //only if the any parameter exists otherwise Ignore
+                Method method=service.getService();
+                Parameter params[]=method.getParameters();
+                if(params.length>1)
+                {
+                    throw new ServiceException("The forwading method number of arguments is more than one");
+                }
+                //if no numbers of parameters ignore it 
+                if(params.length==1)
+                {
+                    //now check the compatabilty of the argument (which the earlier method retuned)
+                    //with the parameter
+                    Class<?> paramType=params[0].getType();
+                    if(! paramType.isInstance(arg))
+                    {
+                        throw new ServiceException("Argumment type mismatch");
+                    }
+                    try{
+                    Object object=service.getServiceClass().newInstance();
+                    method.invoke(object,arg);
+                    }catch(InstantiationException | IllegalAccessException exp)
+                    {
+                        throw new ServiceException(exp.getMessage());
+                    }
+
+                }else{
+                    //in case of no parameter handle it normally
+
                 // get the servlet mapping part of the url (based on how servlet is mapped)
                 // for instance it'll return /calculatorService
                 String servletPath=request.getServletPath(); 
                 requestDispatcher=request.getRequestDispatcher(servletPath+forwardTo);
                 requestDispatcher.forward(request,response);    
+                }
             }else{
                 //check whether the resource exists or not
                 if(getServletContext().getResource(forwardTo)!=null)
                     {
-                    requestDispatcher=request.getRequestDispatcher(forwardTo);  
+                    requestDispatcher=request.getRequestDispatcher(forwardTo);
                     requestDispatcher.forward(request,response);
                     }
-                else response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                else throw new ServiceException("The Service ("+ forwardTo + ") meant to be forward not found");
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
             }catch(Exception e)
         {
@@ -111,7 +145,6 @@ public class TMWebRock extends HttpServlet
         System.out.println("Size : "+autowiredList.size());
         for(AutowiredInfo autowiredInfo:autowiredList)
         {
-            System.out.println("Door1");
             Class<?> fieldTypeClass=autowiredInfo.getAutowiredField().getType();
             String fieldTypeClassName=fieldTypeClass.getName(); 
             String beanName=autowiredInfo.getBeanName();
@@ -123,7 +156,6 @@ public class TMWebRock extends HttpServlet
              Object object=null;
              object=request.getAttribute(beanName);
              System.out.println("IN REQ "+object);
-             System.out.println("Door 3");
              if(!fieldTypeClass.isInstance(object)) object=null;
              if(object==null)
              {
@@ -137,7 +169,7 @@ public class TMWebRock extends HttpServlet
                     if(!fieldTypeClass.isInstance(object)) object=null;
                 }
              }
-             System.out.println("door 4");
+             
              try{
              Object obj=service.getServiceClass().newInstance();
              setterMethod.invoke(obj,object);
@@ -171,21 +203,24 @@ public class TMWebRock extends HttpServlet
             Method serviceMethod=service.getService();
             
             System.out.println(request.getPathInfo());
-            //int a=Integer.parseInt(request.getParameter("a"));
-            //int b=Integer.parseInt(request.getParameter("b"));
-            //System.out.println("Values : "+a+","+b);
+            int a=Integer.parseInt(request.getParameter("a"));
+            int b=Integer.parseInt(request.getParameter("b"));
+            System.out.println("Values : "+a+","+b);
             
             Object obj=serviceClass.newInstance();
-            // Object result=
             System.out.println("Invoking method : "+serviceMethod.getName());
             handleInjection(request,service,serviceClass,obj);
-            serviceMethod.invoke(obj);
-            System.out.println("CAT");
-            //System.out.println("Result : "+result);
+            Object result=serviceMethod.invoke(obj,a,b);
+            System.out.println("Result : "+result);
             if(forwardTo!=null)
             {
                 handleInjection(request,service,serviceClass,obj);
-                handleRequestForwardTo(request,response,webRockModel,forwardTo);
+                try{    
+                handleRequestForwardTo(request,response,webRockModel,forwardTo,result);
+                }catch(ServiceException serviceException)
+                {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
             } 
 
         }catch(InvocationTargetException ite)
@@ -221,7 +256,7 @@ public class TMWebRock extends HttpServlet
             if(forwardTo!=null) 
             {
                 handleInjection(request,service,serviceClass,obj);
-                handleRequestForwardTo(request,response,webRockModel,forwardTo);
+                handleRequestForwardTo(request,response,webRockModel,forwardTo,result);
             }
             }catch(Exception e){System.out.println(e);}
     }
