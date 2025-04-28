@@ -16,6 +16,19 @@ import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 public class TMWebRock extends HttpServlet
 {
+    private byte checkIsTheParameterPrimitiveType(Class<?> paramType)
+    {
+        String paramName=paramType.getName();
+        if(paramName instanceof java.lang.Long) return 0;
+        if(paramName instanceof java.lang.Integer) return 1;
+        if(paramName instanceof java.lang.Short) return 2;
+        if(paramName instanceof java.lang.Byte) return 3;
+        if(paramName instanceof java.lang.Double) return 4;
+        if(paramName instanceof java.lang.Float) return 5;
+        if(paramName instanceof java.lang.Character) return 6;
+        if(paramName instanceof java.lang.Boolean) return 7;
+        return -1;
+    }
     private Method getMethod(Class serviceClass,String name,Class paramType)
     {
         try{
@@ -104,10 +117,14 @@ public class TMWebRock extends HttpServlet
                     Class<?> paramType=params[0].getType();
                     if(! paramType.isInstance(arg))
                     {
+                        // now check if the parameter is primitive type 
+                        // now check which primitive type is argument with parameter
+                        checkIsTheParameterPrimitiveType(paramType);
                         throw new ServiceException("Argumment type mismatch");
                     }
                     try{
                     Object object=service.getServiceClass().newInstance();
+                    //check if the argument is primitive type
                     method.invoke(object,arg);
                     }catch(InstantiationException | IllegalAccessException exp)
                     {
