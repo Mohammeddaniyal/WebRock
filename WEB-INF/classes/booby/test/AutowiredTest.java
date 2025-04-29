@@ -16,7 +16,7 @@ public class AutowiredTest {
     }
     @Path("/sessionTest")
     @Forward("/calculator/greet")
-    public void setStudentInSession()
+    public String setStudentInSession()
     {
         System.out.println("HELLOOOOOOOOOOOO!!!");
         Student s=new Student(100,"Daniyal Ali");
@@ -24,5 +24,6 @@ public class AutowiredTest {
         System.out.println(session);
         session.setAttribute("std", s);
         System.out.println("LOOW");
+        return "This is the student data that i setted in session";
     }
 }
