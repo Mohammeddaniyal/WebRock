@@ -145,6 +145,27 @@ public class TMWebRockStarter extends HttpServlet {
                         System.out.println(path.value());
                         isGetAllowed = isPostAllowed = true;
                     }
+                    ArrayList<RequestParameterInfo> requestParameterInfoList=new ArrayList<>();
+                    // in case of Path present check for the method parameters
+                    if (pathPresent) {
+                        Parameter parameters[] = method.getParameters();
+                        RequestParameterInfo requestParameterInfo;
+                        for (Parameter parameter : parameters) {
+                            RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
+                            // if annotation not present raise exception and send error page
+                            if (requestParameter == null) {
+                                throw new ServletException(
+                                        "Startup validation failed. Missing @RequestParameter in service method.");
+                            }
+                            Class<?> parameterClass=parameter.getType();
+                            String name=requestParameter.value();
+                            System.out.println("PARAMETER");
+                            System.out.println("Parameter class : "+parameterClass.getName());
+                            System.out.println("Name : "+name);
+                            requestParameterInfo=new RequestParameterInfo(parameterClass, name);
+                            requestParameterInfoList.add(requestParameterInfo);
+                        }
+                    }
                     Forward forward = null;
                     if (runOnStart == false) {
                         forward = method.getAnnotation(Forward.class);
@@ -162,6 +183,7 @@ public class TMWebRockStarter extends HttpServlet {
                     }
                     service.setIsGetAllowed(isGetAllowed);
                     service.setIsPostAllowed(isPostAllowed);
+                    service.setRequestParameterInfoList(requestParameterInfoList);
                     service.setInjectSessionScope(injectSessionScope);
                     service.setInjectApplicationScope(injectApplicationScope);
                     service.setInjectRequestScope(injectRequestScope);
