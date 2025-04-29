@@ -147,10 +147,10 @@ public class TMWebRock extends HttpServlet {
 
                         }
                         try {
-                            //before invoking handle the autowirings
-                            handleAutowiredProperties(service, request);
                             Class<?> serviceClass=service.getServiceClass();
                             Object object = serviceClass.newInstance();
+                            //before invoking handle the autowirings
+                            handleAutowiredProperties(service, request,object);
                             handleInjection(request, service, serviceClass, object);
                             // check if the argument is primitive type
                             // if it's primitive then invoke the method accordignly
@@ -199,7 +199,7 @@ public class TMWebRock extends HttpServlet {
         }
     }
 
-    private void handleAutowiredProperties(Service service, HttpServletRequest request)throws ServiceException {
+    private void handleAutowiredProperties(Service service, HttpServletRequest request,Object obj)throws ServiceException {
         System.out.println("HANDLE AUTOWIRE");
         List<AutowiredInfo> autowiredList = service.getAutowiredList();
         System.out.println("Size : " + autowiredList.size());
@@ -231,10 +231,9 @@ public class TMWebRock extends HttpServlet {
             }
 
             try {
-                Object obj = service.getServiceClass().newInstance();
                 setterMethod.invoke(obj, object);
 
-            } catch (InstantiationException | InvocationTargetException | IllegalAccessException exception) {
+            } catch ( InvocationTargetException | IllegalAccessException exception) {
                 System.out.println("Exception raised");
                 System.out.println(exception.getMessage());
                 throw new ServiceException(exception.getMessage());
@@ -257,8 +256,8 @@ public class TMWebRock extends HttpServlet {
             }
             // before invoking the service/method
             // set data against the all autowired properties
-
-            handleAutowiredProperties(service, request);
+            Object obj=serviceClass.newInstance();
+            handleAutowiredProperties(service, request,obj);
 
             Method serviceMethod = service.getService();
 
@@ -267,7 +266,6 @@ public class TMWebRock extends HttpServlet {
             // int b = Integer.parseInt(request.getParameter("b"));
             // System.out.println("Values : " + a + "," + b);
 
-            Object obj = serviceClass.newInstance();
             System.out.println("Invoking method : " + serviceMethod.getName());
             handleInjection(request, service, serviceClass, obj);
             Object result = serviceMethod.invoke(obj, new Object[0]);
