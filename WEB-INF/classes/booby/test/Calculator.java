@@ -23,7 +23,7 @@ public class Calculator
       System.out.println("STUDENT "+student);
       this.student=student;
       System.out.println("Student Data ");
-      System.out.println("Roll number : "+student.getRollNumber()+", Name : "+student.getName());
+    //  System.out.println("Roll number : "+student.getRollNumber()+", Name : "+student.getName());
    }
    public void setRequestScope(RequestScope requestScope)
    {
@@ -76,6 +76,7 @@ public void forwardTo(int a,int b)
     System.out.println("Request arrived by forwarding : "+a+","+b);
 }
 @Path("/hello")
+@Forward("/test.jsp")
 public void hello()
 {
    System.out.println("HELLO HI EVERYONE");
@@ -87,10 +88,16 @@ public void hell()
    System.out.println("HELL YEAH");
 }
 @Path("/greet")
-@Forward("/calculator/hell")
-public void greet()
+@Forward("/test1/eg1")
+public String greet(String messageString)
 {
+   System.out.println(messageString);
    System.out.println("Greetings");
+   Course course=new Course(1, "Java");
+   System.out.println("Setting course into request scope");
+   requestScope.setAttribute("crs", course);
+   System.out.println(student.getRollNumber()+student.getName());
+   return "Hey i'm greet i've setted the course into the request scope";
 }
 @GET
 @Path("/result")
