@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import javax.sound.midi.SysexMessage;
+
 import java.lang.reflect.*;
 import com.thinking.machines.webrock.pojo.Service;
 import com.thinking.machines.webrock.pojo.AutowiredInfo;
@@ -145,10 +147,30 @@ public class TMWebRock extends HttpServlet {
 
                         }
                         try {
-                            Object object = service.getServiceClass().newInstance();
+                            //before invoking handle the autowirings
+                            handleAutowiredProperties(service, request);
+                            Class<?> serviceClass=service.getServiceClass();
+                            Object object = serviceClass.newInstance();
+                            handleInjection(request, service, serviceClass, object);
                             // check if the argument is primitive type
                             // if it's primitive then invoke the method accordignly
-                            method.invoke(object, arg);
+                            Object result=method.invoke(object, arg);
+
+                            forwardTo = service.getForwardTo();
+                            System.out.println("In Forward Handling the request is being forward to : "+forwardTo);
+
+                            if (result != null)
+                System.out.println("Result class : " + result.getClass().getName());
+            if (forwardTo != null) {
+                // no need for this line, i'll handle it later why no need 
+                //handleInjection(request, service, serviceClass, object);
+                try {
+                    handleRequestForwardTo(request, response, webRockModel, forwardTo, result);
+                } catch (ServiceException serviceException) {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+            }
+
                         } catch (InstantiationException | IllegalAccessException exp) {
                             throw new ServiceException(exp.getMessage());
                         }
@@ -177,7 +199,7 @@ public class TMWebRock extends HttpServlet {
         }
     }
 
-    private void handleAutowiredProperties(Service service, HttpServletRequest request) {
+    private void handleAutowiredProperties(Service service, HttpServletRequest request)throws ServiceException {
         System.out.println("HANDLE AUTOWIRE");
         List<AutowiredInfo> autowiredList = service.getAutowiredList();
         System.out.println("Size : " + autowiredList.size());
@@ -210,11 +232,12 @@ public class TMWebRock extends HttpServlet {
 
             try {
                 Object obj = service.getServiceClass().newInstance();
-                if(object!=null)  setterMethod.invoke(obj, object);
-                else setterMethod.invoke(obj, new Object[]{null});
+                setterMethod.invoke(obj, object);
+
             } catch (InstantiationException | InvocationTargetException | IllegalAccessException exception) {
                 System.out.println("Exception raised");
-                System.out.println(exception);
+                System.out.println(exception.getMessage());
+                throw new ServiceException(exception.getMessage());
             }
         }
     }
@@ -240,9 +263,9 @@ public class TMWebRock extends HttpServlet {
             Method serviceMethod = service.getService();
 
             System.out.println(request.getPathInfo());
-            //int a = Integer.parseInt(request.getParameter("a"));
-            //int b = Integer.parseInt(request.getParameter("b"));
-//            System.out.println("Values : " + a + "," + b);
+            // int a = Integer.parseInt(request.getParameter("a"));
+            // int b = Integer.parseInt(request.getParameter("b"));
+            // System.out.println("Values : " + a + "," + b);
 
             Object obj = serviceClass.newInstance();
             System.out.println("Invoking method : " + serviceMethod.getName());
@@ -252,7 +275,9 @@ public class TMWebRock extends HttpServlet {
             if (result != null)
                 System.out.println("Result class : " + result.getClass().getName());
             if (forwardTo != null) {
-                handleInjection(request, service, serviceClass, obj);
+                // no need for this line after verifying i'll remove it
+                //reason becuase handling injection is already done before
+                //handleInjection(request, service, serviceClass, obj);
                 try {
                     handleRequestForwardTo(request, response, webRockModel, forwardTo, result);
                 } catch (ServiceException serviceException) {
