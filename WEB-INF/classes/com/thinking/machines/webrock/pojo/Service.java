@@ -9,6 +9,7 @@ public class Service {
     private Method service;
     private boolean isGetAllowed;
     private boolean isPostAllowed;
+    private List<RequestParameterInfo> requestParameterInfoList;
     private String forwardTo;
     private boolean runOnStart;
     private int priority;
@@ -25,6 +26,7 @@ public class Service {
         this.forwardTo = null;
         this.isGetAllowed = false;
         this.isPostAllowed = false;
+        this.requestParameterInfoList=null;
         this.runOnStart = false;
         this.priority = 0;
         this.injectSessionScope=false;
@@ -52,6 +54,11 @@ public class Service {
 
     public void setIsPostAllowed(boolean isPostAllowed) {
         this.isPostAllowed = isPostAllowed;
+    }
+
+    public void setRequestParameterInfoList(List<RequestParameterInfo> requestParameterInfoList)
+    {
+        this.requestParameterInfoList=requestParameterInfoList;
     }
 
     public void setForwardTo(String forwardTo) {
@@ -109,6 +116,11 @@ public class Service {
 
     public boolean isPostAllowed() {
         return this.isPostAllowed;
+    }
+
+    public List<RequestParameterInfo> getRequestParameterInfoList()
+    {
+        return this.requestParameterInfoList;
     }
 
     public String getForwardTo() {
