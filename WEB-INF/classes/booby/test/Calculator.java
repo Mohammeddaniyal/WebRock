@@ -88,8 +88,9 @@ public void hell()
 }
 @Path("/greet")
 @Forward("/calculator/hell")
-public void greet(int a,int b)
+public void greet()
 {
+   requestScope.setAttribute("std", new Student(101,"Faizan Shaikh"));
    System.out.println("Greetings");
 }
 @GET
