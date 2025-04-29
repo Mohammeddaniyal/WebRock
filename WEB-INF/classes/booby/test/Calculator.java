@@ -90,7 +90,6 @@ public void hell()
 @Forward("/calculator/hell")
 public void greet()
 {
-   requestScope.setAttribute("std", new Student(101,"Faizan Shaikh"));
    System.out.println("Greetings");
 }
 @GET
