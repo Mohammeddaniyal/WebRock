@@ -149,11 +149,15 @@ public class TMWebRockStarter extends HttpServlet {
                     // in case of Path present check for the method parameters
                     if (pathPresent) {
                         Parameter parameters[] = method.getParameters();
+                        System.out.println("METHOD "+method.getName());
+                        System.out.println(parameters.length);
                         RequestParameterInfo requestParameterInfo;
                         for (Parameter parameter : parameters) {
+                            System.out.println("Parameter : "+parameter.getType().getName());
                             RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
                             // if annotation not present raise exception and send error page
                             if (requestParameter == null) {
+                                System.out.println("RAISED EXCEPTION");
                                 throw new ServletException(
                                         "Startup validation failed. Missing @RequestParameter in service method.");
                             }

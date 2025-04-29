@@ -9,10 +9,12 @@ import javax.sound.midi.SysexMessage;
 import java.lang.reflect.*;
 import com.thinking.machines.webrock.pojo.Service;
 import com.thinking.machines.webrock.pojo.AutowiredInfo;
+import com.thinking.machines.webrock.pojo.RequestParameterInfo;
 import com.thinking.machines.webrock.scopes.ApplicationScope;
 import com.thinking.machines.webrock.scopes.RequestScope;
 import com.thinking.machines.webrock.scopes.SessionScope;
 import com.thinking.machines.webrock.annotations.POST;
+import com.thinking.machines.webrock.annotations.RequestParameter;
 import com.thinking.machines.webrock.exceptions.ServiceException;
 import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
@@ -262,13 +264,56 @@ public class TMWebRock extends HttpServlet {
             Method serviceMethod = service.getService();
 
             System.out.println(request.getPathInfo());
+            
+            List<RequestParameterInfo> requestParameterInfoList=service.getRequestParameterInfoList();
+            Object args[]=new Object[requestParameterInfoList.size()];
+            for(RequestParameterInfo requestParameterInfo:requestParameterInfoList)
+            {
+                String paramName=requestParameterInfo.getName();
+                String reqParam=request.getParameter(paramName);
+                if(paramName==null)
+                {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Bad Request : Required query parameter is misisng or does not match the expected name");
+                }
+                Class<?> parameterClass=requestParameterInfo.getParameterClass();
+
+                if(parameterClass==long.class || parameterClass==Long.class)
+                {
+                    args[args.length]=Long.parseLong(reqParam);
+                }else if(parameterClass==int.class || parameterClass==Integer.class)
+                {
+                    args[args.length]=Integer.parseInt(reqParam);
+                }else if(parameterClass==short.class || parameterClass==Short.class)
+                {
+                    args[args.length]=Short.parseShort(reqParam);
+                }else if(parameterClass==byte.class || parameterClass==Byte.class)
+                {
+                    args[args.length]=Byte.parseByte(reqParam);
+                }else if(parameterClass==double.class || parameterClass==Double.class)
+                {  
+                    args[args.length]=Double.parseDouble(reqParam);
+                }else if(parameterClass==float.class || parameterClass==Float.class)
+                {
+                    args[args.length]=Float.parseFloat(reqParam);
+                }else if(parameterClass==char.class || parameterClass==Character.class)
+                {
+                    args[args.length]=reqParam.charAt(0);
+                }else if(parameterClass==boolean.class || parameterClass==Boolean.class)
+                {
+                    args[args.length]=Boolean.parseBoolean(reqParam);
+                }else// means String
+                {
+                    args[args.length]=reqParam;
+                }
+            }
+           System.out.println("Object arguments length : "+args.length); 
             // int a = Integer.parseInt(request.getParameter("a"));
             // int b = Integer.parseInt(request.getParameter("b"));
             // System.out.println("Values : " + a + "," + b);
 
             System.out.println("Invoking method : " + serviceMethod.getName());
             handleInjection(request, service, serviceClass, obj);
-            Object result = serviceMethod.invoke(obj, new Object[0]);
+            Object result = serviceMethod.invoke(obj, args);
             System.out.println("Result : " + result);
             if (result != null)
                 System.out.println("Result class : " + result.getClass().getName());
