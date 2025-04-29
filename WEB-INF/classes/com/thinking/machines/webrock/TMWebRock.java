@@ -210,7 +210,8 @@ public class TMWebRock extends HttpServlet {
 
             try {
                 Object obj = service.getServiceClass().newInstance();
-                setterMethod.invoke(obj, object);
+                if(object!=null)  setterMethod.invoke(obj, object);
+                else setterMethod.invoke(obj, new Object[]{null});
             } catch (InstantiationException | InvocationTargetException | IllegalAccessException exception) {
                 System.out.println("Exception raised");
                 System.out.println(exception);
@@ -239,14 +240,14 @@ public class TMWebRock extends HttpServlet {
             Method serviceMethod = service.getService();
 
             System.out.println(request.getPathInfo());
-            int a = Integer.parseInt(request.getParameter("a"));
-            int b = Integer.parseInt(request.getParameter("b"));
-            System.out.println("Values : " + a + "," + b);
+            //int a = Integer.parseInt(request.getParameter("a"));
+            //int b = Integer.parseInt(request.getParameter("b"));
+//            System.out.println("Values : " + a + "," + b);
 
             Object obj = serviceClass.newInstance();
             System.out.println("Invoking method : " + serviceMethod.getName());
             handleInjection(request, service, serviceClass, obj);
-            Object result = serviceMethod.invoke(obj, a, b);
+            Object result = serviceMethod.invoke(obj, new Object[0]);
             System.out.println("Result : " + result);
             if (result != null)
                 System.out.println("Result class : " + result.getClass().getName());
