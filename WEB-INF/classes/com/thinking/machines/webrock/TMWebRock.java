@@ -299,6 +299,7 @@ public class TMWebRock extends HttpServlet {
                     File directory=new File(directoryPath);
                     System.out.println("Directory path "+directoryPath);
                     ApplicationDirectory applicationDirectory=new ApplicationDirectory(directory);
+                    args[i]=applicationDirectory;
                 }else if(parameterClass==long.class || parameterClass==Long.class)
                 {
                     args[i]=Long.parseLong(reqParam);
