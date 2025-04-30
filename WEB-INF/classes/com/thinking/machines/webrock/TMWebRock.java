@@ -266,12 +266,14 @@ public class TMWebRock extends HttpServlet {
             System.out.println(request.getPathInfo());
             
             List<RequestParameterInfo> requestParameterInfoList=service.getRequestParameterInfoList();
+           System.out.println("Size : "+requestParameterInfoList.size());
             Object args[]=new Object[requestParameterInfoList.size()];
+            int i=0;
             for(RequestParameterInfo requestParameterInfo:requestParameterInfoList)
             {
                 String paramName=requestParameterInfo.getName();
                 String reqParam=request.getParameter(paramName);
-                if(paramName==null)
+                if(reqParam==null)
                 {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Bad Request : Required query parameter is misisng or does not match the expected name");
                 }
@@ -279,32 +281,33 @@ public class TMWebRock extends HttpServlet {
 
                 if(parameterClass==long.class || parameterClass==Long.class)
                 {
-                    args[args.length]=Long.parseLong(reqParam);
+                    args[i]=Long.parseLong(reqParam);
                 }else if(parameterClass==int.class || parameterClass==Integer.class)
                 {
-                    args[args.length]=Integer.parseInt(reqParam);
+                    args[i]=Integer.parseInt(reqParam);
                 }else if(parameterClass==short.class || parameterClass==Short.class)
                 {
-                    args[args.length]=Short.parseShort(reqParam);
+                    args[i]=Short.parseShort(reqParam);
                 }else if(parameterClass==byte.class || parameterClass==Byte.class)
                 {
-                    args[args.length]=Byte.parseByte(reqParam);
+                    args[i]=Byte.parseByte(reqParam);
                 }else if(parameterClass==double.class || parameterClass==Double.class)
                 {  
-                    args[args.length]=Double.parseDouble(reqParam);
+                    args[i]=Double.parseDouble(reqParam);
                 }else if(parameterClass==float.class || parameterClass==Float.class)
                 {
-                    args[args.length]=Float.parseFloat(reqParam);
+                    args[i]=Float.parseFloat(reqParam);
                 }else if(parameterClass==char.class || parameterClass==Character.class)
                 {
-                    args[args.length]=reqParam.charAt(0);
+                    args[i]=reqParam.charAt(0);
                 }else if(parameterClass==boolean.class || parameterClass==Boolean.class)
                 {
-                    args[args.length]=Boolean.parseBoolean(reqParam);
+                    args[i]=Boolean.parseBoolean(reqParam);
                 }else// means String
                 {
-                    args[args.length]=reqParam;
+                    args[i]=reqParam;
                 }
+                i++;
             }
            System.out.println("Object arguments length : "+args.length); 
             // int a = Integer.parseInt(request.getParameter("a"));
