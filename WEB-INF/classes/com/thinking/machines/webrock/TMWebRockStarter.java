@@ -113,10 +113,10 @@ public class TMWebRockStarter extends HttpServlet {
                     autowiredList.add(autowiredInfo);
                 }
                 InjectRequestParameter injectRequestParameter=field.getAnnotation(InjectRequestParameter.class);
-                if(injectRequestScope!=null)
+                if(injectRequestParameter!=null)
                 {
-                    String name=injectRequestScope.value();
-                    if(name.trim().length==0)
+                    String name=injectRequestParameter.value();
+                    if(name.trim().length()==0)
                     {
                         continue;
                     }
@@ -124,9 +124,9 @@ public class TMWebRockStarter extends HttpServlet {
                     String setterMethodName="set"+fieldName.substring(0,1).toUpperCase()+fieldName.substring(1);
                     System.out.println("INJECT REQUEST PARAMETER, setter method name "+setterMethodName);
                     Method setterMethod=serviceClass.getMethod(setterMethodName);
-                    if(method!=null)
+                    if(setterMethod!=null)
                     {
-                        System.out.println("Got method : "+method.getName());
+                        System.out.println("Got method : "+setterMethod.getName());
                     }
                     requestParameterFieldInfo=new RequestParameterFieldInfo(setterMethod,name);
                     requestParameterFieldInfoList.add(requestParameterFieldInfo);
