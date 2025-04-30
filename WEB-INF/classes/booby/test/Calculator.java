@@ -43,7 +43,7 @@ public class Calculator
 @GET
 @Path("/add")
 @Forward("/calculator/result")
-public int add(int e,int f)
+public int add(@RequestParameter("a") int e,@RequestParameter("b") int f)
 {
    for (Method method : Calculator.class.getDeclaredMethods()) {
     System.out.println("Method: " + method.getName());
@@ -53,27 +53,27 @@ public int add(int e,int f)
 return e+f;
 }
 @Path("/sub")
-public int subtract(int e,int f)
+public int subtract(@RequestParameter("a") int e,@RequestParameter("b") int f)
 {
 return e-f;
 }
 @Forward("/test.jsp")
 @Path("/mul")
-public int multiply(int e,int f)
+public int multiply(@RequestParameter("a") int e,@RequestParameter("b") int f)
 {
 return e*f;
 }
 @GET
 @Path("/div")
-public int divide(int e,int f)
+public int divide(@RequestParameter("a") int e,@RequestParameter("b") int f)
 {
 return e/f;
 }
 @GET
 @Path("/forward")
-public void forwardTo(int a,int b)
+public void forwardTo(@RequestParameter("a") int e,@RequestParameter("b") int f)
 {
-    System.out.println("Request arrived by forwarding : "+a+","+b);
+    System.out.println("Request arrived by forwarding : "+e+","+f);
 }
 @Path("/hello")
 @Forward("/test.jsp")
@@ -89,7 +89,7 @@ public void hell()
 }
 @Path("/greet")
 @Forward("/test1/eg1")
-public String greet(String messageString)
+public String greet(@RequestParameter("msg") String messageString)
 {
    System.out.println(messageString);
    System.out.println("Greetings");
@@ -102,14 +102,14 @@ public String greet(String messageString)
 @GET
 @Path("/result")
 @Forward("/calculator/greet")
-public void showResult(int result)
+public void showResult(@RequestParameter("result") int result)
 {
    System.out.println("The request is forwarded to showResult and result is "+result);
 }
 @GET
 @Forward("/calculator/studentTest")
 @Path("/addStudent")
-public Student addStudent(int a,int b)
+public Student addStudent()
 {
    System.out.println("Add Student got invoked");
 Student s=new Student(101,"Daniyal Ali");
@@ -119,7 +119,7 @@ return s;
 
 @GET
 @Path("/studentTest")
-public void studentTest(String s)
+public void studentTest(@RequestParameter("s") String s)
 {
    System.out.println("Student arrived");
    //System.out.println(s.getRollNumber()+","+s.getName());
