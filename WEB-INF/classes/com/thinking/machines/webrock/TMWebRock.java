@@ -2,6 +2,7 @@ package com.thinking.machines.webrock;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,11 +125,12 @@ public class TMWebRock extends HttpServlet {
             if(requestParameterFieldInfoList.size()==0) return;
             reqParamMap.forEach((paramName, arg) -> {
                 for (RequestParameterFieldInfo requestParameterFieldInfo : requestParameterFieldInfoList) {
+                    String name = requestParameterFieldInfo.getName();
+                    if(!paramName.equals(name)) continue;
                     Method setterMethod = requestParameterFieldInfo.getSetterMethod();
                     System.out.println("HELLLLO");
                     System.out.println(setterMethod);
                     System.out.println("Setter Method : "+setterMethod);
-                    String name = requestParameterFieldInfo.getName();
                     Parameter[] params = setterMethod.getParameters();
                     if (params.length == 0 || params.length>1) {
                         // raise exception
@@ -141,6 +143,7 @@ public class TMWebRock extends HttpServlet {
                     byte primitive = (byte) getParameterPrimitiveType(paramType);
                     System.out.println("Is primitive : " + primitive);
                     System.out.println("Param type : " + paramType.getName());
+                    System.out.println("Argument type : "+argClass.getName());
                     boolean primitiveMatched = false;
                     // if the parameter is primitive, then compare it with the argument type
                     primitiveMatched=isPrimitive((byte)primitive,argClass);
@@ -323,7 +326,7 @@ public class TMWebRock extends HttpServlet {
             List<RequestParameterInfo> requestParameterInfoList=service.getRequestParameterInfoList();
            System.out.println("Size : "+requestParameterInfoList.size());
             Object args[]=new Object[requestParameterInfoList.size()];
-            Map<String,Object> reqParamMap=new HashMap<>();
+            Map<String,Object> reqParamMap=new LinkedHashMap<>();
             int i=0;
             for(RequestParameterInfo requestParameterInfo:requestParameterInfoList)
             {
