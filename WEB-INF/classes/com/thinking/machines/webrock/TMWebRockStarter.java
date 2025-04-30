@@ -131,11 +131,15 @@ public class TMWebRockStarter extends HttpServlet {
                         if(m.getName().equals(setterMethodName))
                         {
                             setterMethod=m;
+                            int length=setterMethod.getParameters().length;
+                            if(length == 0 || length>1)
+                            {
+                                //raise exception 
+                            } 
                             break;
                         }
                     }
-                    
-                    requestParameterFieldInfo=new RequestParameterFieldInfo(setterMethod,name);
+                    requestParameterFieldInfo=new RequestParameterFieldInfo(field.getType(),setterMethod,name);
                     requestParameterFieldInfoList.add(requestParameterFieldInfo);
                 }
 
