@@ -1,7 +1,10 @@
 package com.thinking.machines.webrock;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.sound.midi.SysexMessage;
@@ -9,6 +12,7 @@ import javax.sound.midi.SysexMessage;
 import java.lang.reflect.*;
 import com.thinking.machines.webrock.pojo.Service;
 import com.thinking.machines.webrock.pojo.AutowiredInfo;
+import com.thinking.machines.webrock.pojo.RequestParameterFieldInfo;
 import com.thinking.machines.webrock.pojo.RequestParameterInfo;
 import com.thinking.machines.webrock.scopes.ApplicationScope;
 import com.thinking.machines.webrock.scopes.RequestScope;
@@ -20,6 +24,30 @@ import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 
 public class TMWebRock extends HttpServlet {
+    private boolean isPrimitive(byte primitive,Class<?> argClass)
+    {
+        boolean primitiveMatched=false;
+        if (primitive != -1) {
+            if (primitive == 0 && argClass == Long.class)
+                primitiveMatched = true;
+            else if (primitive == 1 && argClass == Integer.class)
+                primitiveMatched = true;
+            else if (primitive == 2 && argClass == Short.class)
+                primitiveMatched = true;
+            else if (primitive == 3 && argClass == Byte.class)
+                primitiveMatched = true;
+            else if (primitive == 4 && argClass == Double.class)
+                primitiveMatched = true;
+            else if (primitive == 5 && argClass == Float.class)
+                primitiveMatched = true;
+            else if (primitive == 6 && argClass == Character.class)
+                primitiveMatched = true;
+            else if (primitive == 7 && argClass == Boolean.class)
+                primitiveMatched = true;
+
+        }
+        return primitiveMatched;
+    }
     private byte getParameterPrimitiveType(Class<?> paramType) {
 
         if (paramType == long.class)
@@ -50,7 +78,8 @@ public class TMWebRock extends HttpServlet {
         }
     }
 
-    private void handleInjection(HttpServletRequest request, Service service, Class serviceClass, Object object) {
+    private void handleInjection(HttpServletRequest request, Service service, Class serviceClass, Object object,Map reqParamMap) throws ServiceException
+    {
         try {
             Method method;
             if (service.getInjectSessionScope()) {
@@ -90,6 +119,43 @@ public class TMWebRock extends HttpServlet {
                     method.invoke(object, applicationDirectory);
                 }
             }
+            if(reqParamMap==null) return;
+            List<RequestParameterFieldInfo> requestParameterFieldInfoList=service.getRequestParameterFieldInfoList();
+            if(requestParameterFieldInfoList.size()==0) return;
+            reqParamMap.forEach((paramName, arg) -> {
+                for (RequestParameterFieldInfo requestParameterFieldInfo : requestParameterFieldInfoList) {
+                    Method setterMethod = requestParameterFieldInfo.getSetterMethod();
+                    System.out.println("HELLLLO");
+                    System.out.println(setterMethod);
+                    System.out.println("Setter Method : "+setterMethod);
+                    String name = requestParameterFieldInfo.getName();
+                    Parameter[] params = setterMethod.getParameters();
+                    if (params.length == 0 || params.length>1) {
+                        // raise exception
+                        // send error page
+                        return;
+                    }
+               
+                    Class<?> paramType = params[0].getType();
+                    Class<?> argClass = arg.getClass();
+                    byte primitive = (byte) getParameterPrimitiveType(paramType);
+                    System.out.println("Is primitive : " + primitive);
+                    System.out.println("Param type : " + paramType.getName());
+                    boolean primitiveMatched = false;
+                    // if the parameter is primitive, then compare it with the argument type
+                    primitiveMatched=isPrimitive((byte)primitive,argClass);
+                    
+                    
+                    System.out.println("Param & Arg matched or not : " + primitiveMatched);
+                    // if the parameter and argument mismatches
+                    if (!paramType.isInstance(arg) && !primitiveMatched) {
+                        throw new RuntimeException("Argumment type mismatch");
+                        }
+                        try{
+                    setterMethod.invoke(object, arg);
+                        }catch(IllegalAccessException | InvocationTargetException exp){}
+                }
+            });
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -123,37 +189,21 @@ public class TMWebRock extends HttpServlet {
                         System.out.println("Param type : " + paramType.getName());
                         boolean primitiveMatched = false;
                         // if the parameter is primitive, then compare it with the argument type
-                        if (primitive != -1) {
-                            if (primitive == 0 && argClass == Long.class)
-                                primitiveMatched = true;
-                            else if (primitive == 1 && argClass == Integer.class)
-                                primitiveMatched = true;
-                            else if (primitive == 2 && argClass == Short.class)
-                                primitiveMatched = true;
-                            else if (primitive == 3 && argClass == Byte.class)
-                                primitiveMatched = true;
-                            else if (primitive == 4 && argClass == Double.class)
-                                primitiveMatched = true;
-                            else if (primitive == 5 && argClass == Float.class)
-                                primitiveMatched = true;
-                            else if (primitive == 6 && argClass == Character.class)
-                                primitiveMatched = true;
-                            else if (primitive == 7 && argClass == Boolean.class)
-                                primitiveMatched = true;
-
-                        }
+                        primitiveMatched=isPrimitive((byte)primitive,argClass);
+                        
+                        
                         System.out.println("Param & Arg matched or not : " + primitiveMatched);
                         // if the parameter and argument mismatches
                         if (!paramType.isInstance(arg) && !primitiveMatched) {
                             throw new ServiceException("Argumment type mismatch");
-
-                        }
-                        try {
+                            }
+                    
+                            try {
                             Class<?> serviceClass=service.getServiceClass();
                             Object object = serviceClass.newInstance();
                             //before invoking handle the autowirings
                             handleAutowiredProperties(service, request,object);
-                            handleInjection(request, service, serviceClass, object);
+                            handleInjection(request, service, serviceClass, object,null);
                             // check if the argument is primitive type
                             // if it's primitive then invoke the method accordignly
                             Object result=method.invoke(object, arg);
@@ -273,6 +323,7 @@ public class TMWebRock extends HttpServlet {
             List<RequestParameterInfo> requestParameterInfoList=service.getRequestParameterInfoList();
            System.out.println("Size : "+requestParameterInfoList.size());
             Object args[]=new Object[requestParameterInfoList.size()];
+            Map<String,Object> reqParamMap=new HashMap<>();
             int i=0;
             for(RequestParameterInfo requestParameterInfo:requestParameterInfoList)
             {
@@ -335,14 +386,16 @@ public class TMWebRock extends HttpServlet {
                 {
                     args[i]=reqParam;
                 }
+                if(!isInjectParameter) reqParamMap.put(paramName,args[i]);
                 System.out.println(i);
                 i++;
             }
+            System.out.println("Map size : "+reqParamMap.size());
            System.out.println("Object arguments length : "+args.length); 
         
 
             System.out.println("Invoking method : " + serviceMethod.getName());
-            handleInjection(request, service, serviceClass, obj);
+            handleInjection(request, service, serviceClass, obj,reqParamMap);
             Object result = serviceMethod.invoke(obj, args);
             System.out.println("Result : " + result);
             if (result != null)
@@ -358,8 +411,12 @@ public class TMWebRock extends HttpServlet {
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             }
-
-        } catch (InvocationTargetException ite) {
+            
+        }catch(ServiceException serviceException)
+        {
+            System.out.println(serviceException);
+        } 
+        catch (InvocationTargetException ite) {
             System.out.println(ite);
         } catch (Exception e) {
             System.out.println(e);
@@ -389,7 +446,7 @@ public class TMWebRock extends HttpServlet {
             Object result = serviceMethod.invoke(obj, a, b);
             System.out.println("Result : " + result);
             if (forwardTo != null) {
-                handleInjection(request, service, serviceClass, obj);
+                handleInjection(request, service, serviceClass, obj,null);
                 handleRequestForwardTo(request, response, webRockModel, forwardTo, result);
             }
         } catch (Exception e) {

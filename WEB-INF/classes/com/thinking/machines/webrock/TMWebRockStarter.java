@@ -124,16 +124,17 @@ public class TMWebRockStarter extends HttpServlet {
                     String setterMethodName="set"+fieldName.substring(0,1).toUpperCase()+fieldName.substring(1);
                     System.out.println("INJECT REQUEST PARAMETER, setter method name "+setterMethodName);
                     Method setterMethod=null;
-                    try{
-                    setterMethod=serviceClass.getMethod(setterMethodName);
-                    if(setterMethod!=null)
+                    //find the setterMethod using traversing the array
+                    Method []methods=serviceClass.getDeclaredMethods();
+                    for(Method m:methods)
                     {
-                        System.out.println("Got method : "+setterMethod.getName());
+                        if(m.getName().equals(setterMethodName))
+                        {
+                            setterMethod=m;
+                            break;
+                        }
                     }
-                }catch(NoSuchMethodException noSuchMethodException)
-                {
-                    //do nothing
-                }
+                    
                     requestParameterFieldInfo=new RequestParameterFieldInfo(setterMethod,name);
                     requestParameterFieldInfoList.add(requestParameterFieldInfo);
                 }
