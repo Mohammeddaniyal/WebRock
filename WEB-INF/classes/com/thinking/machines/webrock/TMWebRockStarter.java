@@ -110,7 +110,23 @@ public class TMWebRockStarter extends HttpServlet {
                     AutowiredInfo autowiredInfo=new AutowiredInfo(beanName, field, setterMethod);
                     autowiredList.add(autowiredInfo);
                 }
-
+                InjectRequestParameter injectRequestParameter=field.getAnnotation(InjectRequestParameter.class);
+                if(injectRequestScope!=null)
+                {
+                    String name=injectRequestScope.value();
+                    if(name.trim().length==0)
+                    {
+                        continue;
+                    }
+                    String fieldName=field.getName();
+                    String setterMethodName="set"+fieldName.substring(0,1).toUpperCase()+fieldName.substring(1);
+                    System.out.println("INJECT REQUEST PARAMETER, setter method name "+setterMethodName);
+                    Method setterMethod=serviceClass.getMethod(setterMethodName);
+                    if(method!=null)
+                    {
+                        System.out.println("Got method : "+method.getName());
+                    }
+                }
 
                 
               }

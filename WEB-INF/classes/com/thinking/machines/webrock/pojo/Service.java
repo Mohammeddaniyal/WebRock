@@ -17,9 +17,8 @@ public class Service {
     private boolean injectApplicationScope;
     private boolean injectRequestScope;
     private boolean injectApplicationDirectory;
-    private Method injectRequestParameterSetterMethod;
-    private String injectRequestParameterName;
     private List<AutowiredInfo> autowiredList;
+    private List<RequestParameterFieldInfo> requestParameterFieldInfoList;
 
     public Service() {
         this.serviceClass = null;

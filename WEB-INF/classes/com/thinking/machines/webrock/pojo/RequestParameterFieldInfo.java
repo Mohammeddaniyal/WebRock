@@ -1,5 +1,7 @@
 package com.thinking.machines.webrock.pojo;
 
+import java.lang.reflect.Method;
+
 public class RequestParameterFieldInfo {
     private Method setterMethod;
     private String name;
