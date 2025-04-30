@@ -175,9 +175,11 @@ public class TMWebRockStarter extends HttpServlet {
                     // in case of no annotaiton
                     // present either on class
                     // or method allow both
+                    //change dont allow both default would be get
                     {
                         System.out.println(path.value());
-                        isGetAllowed = isPostAllowed = true;
+                        isGetAllowed = true;
+                        //isGetAllowed = isPostAllowed = true;
                     }
                     ArrayList<RequestParameterInfo> requestParameterInfoList=new ArrayList<>();
                     // in case of Path present check for the method parameters
@@ -186,13 +188,35 @@ public class TMWebRockStarter extends HttpServlet {
                         System.out.println("METHOD "+method.getName());
                         System.out.println(parameters.length);
                         RequestParameterInfo requestParameterInfo;
+                        int i=0;
                         for (Parameter parameter : parameters) {
                             System.out.println("Parameter : "+parameter.getType().getName());
-                            RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
-                            // if annotation not present raise exception and send error page
+                            //in case of get type method @RequestParameter is mandatory
+                            //in case of post type method @RequestParameter must no be used
                             Class<?> parameterClass=parameter.getType();
-                         
                             boolean isInjectParameter=(parameterClass==SessionScope.class || parameterClass==ApplicationScope.class || parameterClass==RequestScope.class || parameterClass==ApplicationDirectory.class);
+                            RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
+                            if(isPostAllowed && requestParameter!=null)
+                            {
+                                //throw exception
+                                throw new ServletException("Method "+method.getName()+" is annotated with @POST. @RequestParameter is not allowed on POST methods");
+                            }
+                            if(isPostAllowed)
+                            {
+                                if(i==2)
+                                {
+                                    //Except SessionScope ApplicationScope RequestScope and ApplicationDirectory only one other type of parameter allowed
+                                    //otherwise raise exception
+                                    System.out.println("Only one data parameter allowed in POST service");
+                                    throw new ServletException("Only one data parameter allowed in POST service");
+                                }
+                                if(!isInjectParameter)
+                                    i++;
+                                
+                            }
+                            //(in case of GET type service) if annotation not present raise exception and send error page
+                            //Class<?> parameterClass=parameter.getType();
+                         
                             System.out.println("Inject Parameter "+isInjectParameter);
                             if (requestParameter == null && !isInjectParameter) {    
                                 System.out.println("RAISED EXCEPTION");
@@ -213,6 +237,8 @@ public class TMWebRockStarter extends HttpServlet {
                             requestParameterInfo=new RequestParameterInfo(parameterClass, name);
                             requestParameterInfoList.add(requestParameterInfo);
                         }
+                    
+                    
                     }
                     Forward forward = null;
                     if (runOnStart == false) {
