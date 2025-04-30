@@ -432,6 +432,10 @@ public class TMWebRock extends HttpServlet {
             WebRockModel webRockModel = (WebRockModel) getServletContext().getAttribute("webRockModel");
             String path = request.getPathInfo();
             Service service = webRockModel.getService(path);
+            if(service==null)
+            {
+                
+            }
             Class serviceClass = service.getServiceClass();
             String forwardTo = service.getForwardTo();
             if (!service.isPostAllowed()) {
