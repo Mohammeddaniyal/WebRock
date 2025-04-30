@@ -6,6 +6,9 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 import com.thinking.machines.webrock.pojo.*;
+import com.thinking.machines.webrock.scopes.ApplicationScope;
+import com.thinking.machines.webrock.scopes.RequestScope;
+import com.thinking.machines.webrock.scopes.SessionScope;
 import com.thinking.machines.webrock.model.*;
 import com.thinking.machines.webrock.annotations.*;
 import com.thinking.machines.webrock.annotations.Autowired;
@@ -156,12 +159,13 @@ public class TMWebRockStarter extends HttpServlet {
                             System.out.println("Parameter : "+parameter.getType().getName());
                             RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
                             // if annotation not present raise exception and send error page
-                            if (requestParameter == null) {
+                            Class<?> parameterClass=parameter.getType();
+                            boolean isInjectParameter=(parameterClass==SessionScope.class || parameterClass==ApplicationScope.class || parameterClass==RequestScope.class || parameterClass==ApplicationDirectory.class);
+                            if (requestParameter == null) {    
                                 System.out.println("RAISED EXCEPTION");
                                 throw new ServletException(
                                         "Startup validation failed. Missing @RequestParameter in service method.");
                             }
-                            Class<?> parameterClass=parameter.getType();
                             String name=requestParameter.value();
                             System.out.println("PARAMETER");
                             System.out.println("Parameter class : "+parameterClass.getName());
