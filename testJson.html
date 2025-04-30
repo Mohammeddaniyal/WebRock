@@ -1,0 +1,45 @@
+<!-- Post with data-->
+<!DOCTYPE HTML
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<title>AJAX Examples</title>
+<script src="jquery/jquery.js"></script>
+<script>
+$(()=>{
+    $('#saveEnquiry').click(function(){
+        var student={
+"rollNumber" : $('#rollNumber').val(),
+"name" : $('#name').val(),
+};
+$('#data').html('');
+$.ajax({
+    type:"POST",
+    url:"calculatorService/testJson/testStudent",
+    data:JSON.stringify(student),
+    success:function(data)
+    {
+        alert('success');
+    },
+    failure:function()
+    {
+        alert('failed');
+    },
+    dataType:"json"
+});
+ 
+    });
+    
+});
+
+</script>
+</head>
+<body>
+<h1>Post Type request example</h1>
+Roll number <input type='text' id='rollNumber'><br>
+Name<input type='text' id='name'><br>
+<button id='saveEnquiry' type='button'>Submit</button>
+<a href='/something/index.html'>Home</a>
+<div></div>
+</body>
+</html>
