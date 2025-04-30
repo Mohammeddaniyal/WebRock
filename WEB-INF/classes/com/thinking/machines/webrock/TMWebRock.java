@@ -281,9 +281,24 @@ public class TMWebRock extends HttpServlet {
 
                 //check if the parameter were of inject one's (SessionScope,ApplicationScope,RequestScope and ApplicationDirectory)
 
-                if(parameterClass==SessionScope.class || parameterClass==ApplicationScope.class || parameterClass==RequestScope.class || parameterClass==ApplicationDirectory.class)
+                if(parameterClass==SessionScope.class)
                 {
-                    args[i]=parameterClass.newInstance();
+                    SessionScope sessionScope=new SessionScope(request.getSession());
+                    args[i]=sessionScope;
+                }else if(parameterClass==ApplicationScope.class)
+                {
+                    ApplicationScope applicationScope=new ApplicationScope(getServletContext());
+                    args[i]=applicationScope;
+                }else if(parameterClass==RequestScope.class)
+                {
+                    RequestScope requestScope=new RequestScope(request);
+                    args[i]=requestScope;
+                }else if(parameterClass==ApplicationDirectory.class)
+                {
+                    String directoryPath = getServletContext().getRealPath("/");
+                    File directory=new File(directoryPath);
+                    System.out.println("Directory path "+directoryPath);
+                    ApplicationDirectory applicationDirectory=new ApplicationDirectory(directory);
                 }else if(parameterClass==long.class || parameterClass==Long.class)
                 {
                     args[i]=Long.parseLong(reqParam);
@@ -315,9 +330,7 @@ public class TMWebRock extends HttpServlet {
                 i++;
             }
            System.out.println("Object arguments length : "+args.length); 
-            // int a = Integer.parseInt(request.getParameter("a"));
-            // int b = Integer.parseInt(request.getParameter("b"));
-            // System.out.println("Values : " + a + "," + b);
+        
 
             System.out.println("Invoking method : " + serviceMethod.getName());
             handleInjection(request, service, serviceClass, obj);
