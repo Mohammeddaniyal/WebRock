@@ -84,6 +84,8 @@ public class TMWebRockStarter extends HttpServlet {
               //create List of autowired properties
               Field[] fields=serviceClass.getDeclaredFields();
                 ArrayList<AutowiredInfo> autowiredList=new ArrayList<>();
+                ArrayList<RequestParameterFieldInfo> requestParameterFieldInfoList=new ArrayList<>();
+                RequestParameterFieldInfo requestParameterFieldInfo;
               for(Field field:fields)
               {
                 Autowired autowired=field.getAnnotation(Autowired.class);
@@ -126,6 +128,8 @@ public class TMWebRockStarter extends HttpServlet {
                     {
                         System.out.println("Got method : "+method.getName());
                     }
+                    requestParameterFieldInfo=new RequestParameterFieldInfo(setterMethod,name);
+                    requestParameterFieldInfoList.add(requestParameterFieldInfo);
                 }
 
                 
@@ -222,6 +226,7 @@ public class TMWebRockStarter extends HttpServlet {
                     service.setInjectRequestScope(injectRequestScope);
                     service.setInjectApplicationDirectory(injectApplicationDirectory);
                     service.setAutowiredList(autowiredList);
+                    service.setRequestParameterFieldInfoList(requestParameterFieldInfoList);
                     if (forward != null)
                         service.setForwardTo(forward.value());
                     if (runOnStart) {
