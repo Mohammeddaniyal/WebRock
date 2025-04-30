@@ -168,6 +168,12 @@ public class TMWebRockStarter extends HttpServlet {
                                 throw new ServletException(
                                         "Startup validation failed. Missing @RequestParameter in service method.");
                             }
+                            if(requestParameter!=null && isInjectParameter)
+                            {
+                                System.out.println("RAISED EXCEPTION");
+                                throw new ServletException(
+                                        "Startup validation failed.Not Allowed @RequestParameter with either(SessionScope,RequestScope,ApplicationScope or ApplicationDirectory) in service method.");
+                            }
                             String name="";
                             if(!isInjectParameter) name=requestParameter.value();
                             System.out.println("PARAMETER");
