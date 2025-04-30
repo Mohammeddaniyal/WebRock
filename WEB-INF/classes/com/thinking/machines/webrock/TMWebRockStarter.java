@@ -162,7 +162,7 @@ public class TMWebRockStarter extends HttpServlet {
                             Class<?> parameterClass=parameter.getType();
                          
                             boolean isInjectParameter=(parameterClass==SessionScope.class || parameterClass==ApplicationScope.class || parameterClass==RequestScope.class || parameterClass==ApplicationDirectory.class);
-                            //System.out.println("Inject Parameter "+isInjectParameter);
+                            System.out.println("Inject Parameter "+isInjectParameter);
                             if (requestParameter == null && !isInjectParameter) {    
                                 System.out.println("RAISED EXCEPTION");
                                 throw new ServletException(

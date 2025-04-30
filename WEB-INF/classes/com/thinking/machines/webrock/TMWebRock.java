@@ -250,6 +250,11 @@ public class TMWebRock extends HttpServlet {
             // webRockModel.print();
             String path = request.getPathInfo();
             Service service = webRockModel.getService(path);
+            if(service==null)
+            {
+                response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                return;
+            }
             Class serviceClass = service.getServiceClass();
             String forwardTo = service.getForwardTo();
             if (!service.isGetAllowed()) {
@@ -275,7 +280,7 @@ public class TMWebRock extends HttpServlet {
                 String reqParam=request.getParameter(paramName);
                 Class<?> parameterClass=requestParameterInfo.getParameterClass();
                 boolean isInjectParameter=(parameterClass==SessionScope.class || parameterClass==ApplicationScope.class || parameterClass==RequestScope.class || parameterClass==ApplicationDirectory.class);
-                if(reqParam==null && !isInjectParameter)
+                if((reqParam==null && !isInjectParameter) || parameterClass==null)
                 {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Bad Request : Required query parameter is misisng or does not match the expected name");
                     return;
