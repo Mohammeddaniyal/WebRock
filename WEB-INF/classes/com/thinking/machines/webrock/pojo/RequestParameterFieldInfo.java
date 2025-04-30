@@ -3,6 +3,7 @@ package com.thinking.machines.webrock.pojo;
 import java.lang.reflect.Method;
 
 public class RequestParameterFieldInfo {
+    private Class<?> fieldClass;
     private Method setterMethod;
     private String name;
     public RequestParameterFieldInfo()
@@ -10,10 +11,15 @@ public class RequestParameterFieldInfo {
         this.setterMethod=null;
         this.name="";
     }
-    public RequestParameterFieldInfo(Method setterMethod,String name)
+    public RequestParameterFieldInfo(Class<?> fieldClass,Method setterMethod,String name)
     {
+        this.fieldClass=fieldClass;
         this.setterMethod=setterMethod;
         this.name=name;
+    }
+    public void setFieldClass(Class<?> fieldClass)
+    {
+        this.fieldClass=fieldClass;
     }
     public void setSetterMethod(Method setterMethod)
     {
@@ -22,6 +28,10 @@ public class RequestParameterFieldInfo {
     public void setName(String name)
     {
         this.name=name;
+    }
+    public Class<?> getFieldClass()
+    {
+        return this.fieldClass;
     }
     public Method getSetterMethod()
     {
