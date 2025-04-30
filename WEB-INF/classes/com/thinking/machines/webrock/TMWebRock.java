@@ -273,12 +273,14 @@ public class TMWebRock extends HttpServlet {
             {
                 String paramName=requestParameterInfo.getName();
                 String reqParam=request.getParameter(paramName);
-                if(reqParam==null)
+                Class<?> parameterClass=requestParameterInfo.getParameterClass();
+                boolean isInjectParameter=(parameterClass==SessionScope.class || parameterClass==ApplicationScope.class || parameterClass==RequestScope.class || parameterClass==ApplicationDirectory.class);
+                if(reqParam==null && !isInjectParameter)
                 {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Bad Request : Required query parameter is misisng or does not match the expected name");
+                    return;
                 }
-                Class<?> parameterClass=requestParameterInfo.getParameterClass();
-
+                
                 //check if the parameter were of inject one's (SessionScope,ApplicationScope,RequestScope and ApplicationDirectory)
 
                 if(parameterClass==SessionScope.class)
@@ -328,6 +330,7 @@ public class TMWebRock extends HttpServlet {
                 {
                     args[i]=reqParam;
                 }
+                System.out.println(i);
                 i++;
             }
            System.out.println("Object arguments length : "+args.length); 
@@ -346,6 +349,7 @@ public class TMWebRock extends HttpServlet {
                 try {
                     handleRequestForwardTo(request, response, webRockModel, forwardTo, result);
                 } catch (ServiceException serviceException) {
+                    System.out.println(serviceException.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             }
