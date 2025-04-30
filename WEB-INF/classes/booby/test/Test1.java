@@ -7,6 +7,7 @@ import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.annotations.InjectApplicationDirectory;
 import com.thinking.machines.webrock.annotations.InjectSessionScope;
 import com.thinking.machines.webrock.annotations.Path;
+import com.thinking.machines.webrock.annotations.RequestParameter;
 import com.thinking.machines.webrock.scopes.SessionScope;
 
 @Path("/test1")
@@ -36,7 +37,7 @@ public class Test1 {
     }
     @Path("/eg1")
     @Forward("/calculator/hell")
-    public void eg1(String messageString)
+    public void eg1(@RequestParameter("msg") String messageString)
     {
         System.out.println(messageString);
         System.out.println("hi "+course);
