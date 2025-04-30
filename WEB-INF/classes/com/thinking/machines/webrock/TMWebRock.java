@@ -1,6 +1,8 @@
 package com.thinking.machines.webrock;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,25 +27,78 @@ import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 
 public class TMWebRock extends HttpServlet {
+    private Object parseParameterBasedOnType(HttpServletRequest request,Class clazz,String reqParam)
+    {
+        Object arg=null;
+        if(clazz==SessionScope.class)
+        {
+            SessionScope sessionScope=new SessionScope(request.getSession());
+            arg=sessionScope;
+        }else if(clazz==ApplicationScope.class)
+        {
+            ApplicationScope applicationScope=new ApplicationScope(getServletContext());
+            arg=applicationScope;
+        }else if(clazz==RequestScope.class)
+        {
+            RequestScope requestScope=new RequestScope(request);
+            arg=requestScope;
+        }else if(clazz==ApplicationDirectory.class)
+        {
+            String directoryPath = getServletContext().getRealPath("/");
+            File directory=new File(directoryPath);
+            System.out.println("Directory path "+directoryPath);
+            ApplicationDirectory applicationDirectory=new ApplicationDirectory(directory);
+            arg=applicationDirectory;
+        }else if(clazz==long.class || clazz==Long.class)
+        {
+            arg=Long.parseLong(reqParam);
+        }else if(clazz==int.class || clazz==Integer.class)
+        {
+            arg=Integer.parseInt(reqParam);
+        }else if(clazz==short.class || clazz==Short.class)
+        {
+            arg=Short.parseShort(reqParam);
+        }else if(clazz==byte.class || clazz==Byte.class)
+        {
+            arg=Byte.parseByte(reqParam);
+        }else if(clazz==double.class || clazz==Double.class)
+        {  
+            arg=Double.parseDouble(reqParam);
+        }else if(clazz==float.class || clazz==Float.class)
+        {
+            arg=Float.parseFloat(reqParam);
+        }else if(clazz==char.class || clazz==Character.class)
+        {
+            arg=reqParam.charAt(0);
+        }else if(clazz==boolean.class || clazz==Boolean.class)
+        {
+            arg=Boolean.parseBoolean(reqParam);
+        }else// means String
+        {
+            arg=reqParam;
+        }
+      return arg;
+    }
+    
     private boolean isPrimitive(byte primitive,Class<?> argClass)
     {
         boolean primitiveMatched=false;
         if (primitive != -1) {
-            if (primitive == 0 && argClass == Long.class)
+            if (primitive == 0 && ( argClass == Long.class || argClass == long.class ))
                 primitiveMatched = true;
-            else if (primitive == 1 && argClass == Integer.class)
+            else if (primitive == 1 && (argClass == Integer.class || argClass == int.class))
                 primitiveMatched = true;
-            else if (primitive == 2 && argClass == Short.class)
+            else if (primitive == 2 && (argClass == Short.class || argClass == short.class))
                 primitiveMatched = true;
-            else if (primitive == 3 && argClass == Byte.class)
+            else if (primitive == 3 && (argClass == Byte.class || argClass == byte.class))
                 primitiveMatched = true;
-            else if (primitive == 4 && argClass == Double.class)
+            else if (primitive == 4 && (argClass == Double.class || argClass == double.class))
                 primitiveMatched = true;
-            else if (primitive == 5 && argClass == Float.class)
+            else if (primitive == 5 && (argClass == Float.class || argClass == float.class))
                 primitiveMatched = true;
-            else if (primitive == 6 && argClass == Character.class)
+            else if (primitive == 6 && (argClass == Character.class || argClass == char.class))
                 primitiveMatched = true;
-            else if (primitive == 7 && argClass == Boolean.class)
+            else if (primitive == 7 && (argClass == Boolean.class || argClass == boolean.class))
                 primitiveMatched = true;
 
         }
@@ -79,7 +134,7 @@ public class TMWebRock extends HttpServlet {
         }
     }
 
-    private void handleInjection(HttpServletRequest request, Service service, Class serviceClass, Object object,Map reqParamMap) throws ServiceException
+    private void handleInjection(HttpServletRequest request, Service service, Class serviceClass, Object object) throws ServiceException
     {
         try {
             Method method;
@@ -120,45 +175,51 @@ public class TMWebRock extends HttpServlet {
                     method.invoke(object, applicationDirectory);
                 }
             }
-            if(reqParamMap==null) return;
             List<RequestParameterFieldInfo> requestParameterFieldInfoList=service.getRequestParameterFieldInfoList();
-            if(requestParameterFieldInfoList.size()==0) return;
-            reqParamMap.forEach((paramName, arg) -> {
-                for (RequestParameterFieldInfo requestParameterFieldInfo : requestParameterFieldInfoList) {
-                    String name = requestParameterFieldInfo.getName();
-                    if(!paramName.equals(name)) continue;
-                    Method setterMethod = requestParameterFieldInfo.getSetterMethod();
-                    System.out.println("HELLLLO");
-                    System.out.println(setterMethod);
-                    System.out.println("Setter Method : "+setterMethod);
-                    Parameter[] params = setterMethod.getParameters();
-                    if (params.length == 0 || params.length>1) {
-                        // raise exception
-                        // send error page
-                        return;
-                    }
-               
-                    Class<?> paramType = params[0].getType();
-                    Class<?> argClass = arg.getClass();
-                    byte primitive = (byte) getParameterPrimitiveType(paramType);
-                    System.out.println("Is primitive : " + primitive);
-                    System.out.println("Param type : " + paramType.getName());
-                    System.out.println("Argument type : "+argClass.getName());
-                    boolean primitiveMatched = false;
-                    // if the parameter is primitive, then compare it with the argument type
-                    primitiveMatched=isPrimitive((byte)primitive,argClass);
-                    
-                    
-                    System.out.println("Param & Arg matched or not : " + primitiveMatched);
-                    // if the parameter and argument mismatches
-                    if (!paramType.isInstance(arg) && !primitiveMatched) {
-                        throw new RuntimeException("Argumment type mismatch");
-                        }
-                        try{
-                    setterMethod.invoke(object, arg);
-                        }catch(IllegalAccessException | InvocationTargetException exp){}
+        
+
+              for (RequestParameterFieldInfo requestParameterFieldInfo : requestParameterFieldInfoList) {
+            String name = requestParameterFieldInfo.getName();
+            String argString= request.getParameter(name);
+            if(argString==null) continue;
+            Method setterMethod = requestParameterFieldInfo.getSetterMethod();
+            if(setterMethod==null)
+            {
+                //raise exception
+                return;
+            }
+            Parameter[] params = setterMethod.getParameters();
+
+            if (params.length == 0 || params.length>1) {
+                // raise exception
+                // send error page
+                System.out.println("Illegal number of parameters");
+                return;
+            }
+       
+            Class<?> paramType = params[0].getType();
+            Class<?> fieldClass = requestParameterFieldInfo.getFieldClass();
+            byte primitive = (byte) getParameterPrimitiveType(paramType);
+            System.out.println("Is primitive : " + primitive);
+            System.out.println("Param type : " + paramType.getName());
+            System.out.println("Field type : "+fieldClass.getName());
+            boolean primitiveMatched = false;
+            // if the parameter is primitive, then compare it with the argument type
+            primitiveMatched=isPrimitive((byte)primitive,fieldClass);
+            
+            
+            System.out.println("Param & Arg matched or not : " + primitiveMatched);
+            // if the parameter and argument mismatches
+            if (!paramType.isInstance(fieldClass) && !primitiveMatched) {
+                throw new RuntimeException("Argumment type mismatch");
                 }
-            });
+                Object arg=parseParameterBasedOnType(request,fieldClass,argString);
+                System.out.println("FIELD ARGUMENT : "+arg);
+                try{
+            setterMethod.invoke(object, arg);
+                }catch(IllegalAccessException | InvocationTargetException exp){}
+        }
+    
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -206,7 +267,7 @@ public class TMWebRock extends HttpServlet {
                             Object object = serviceClass.newInstance();
                             //before invoking handle the autowirings
                             handleAutowiredProperties(service, request,object);
-                            handleInjection(request, service, serviceClass, object,null);
+                            handleInjection(request, service, serviceClass, object);
                             // check if the argument is primitive type
                             // if it's primitive then invoke the method accordignly
                             Object result=method.invoke(object, arg);
@@ -222,6 +283,7 @@ public class TMWebRock extends HttpServlet {
                 try {
                     handleRequestForwardTo(request, response, webRockModel, forwardTo, result);
                 } catch (ServiceException serviceException) {
+                    System.out.println(serviceException.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             }
@@ -245,9 +307,10 @@ public class TMWebRock extends HttpServlet {
                 if (getServletContext().getResource(forwardTo) != null) {
                     requestDispatcher = request.getRequestDispatcher(forwardTo);
                     requestDispatcher.forward(request, response);
-                } else
+                } else{
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     throw new ServiceException("The Service (" + forwardTo + ") meant to be forward not found");
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -324,9 +387,10 @@ public class TMWebRock extends HttpServlet {
             System.out.println(request.getPathInfo());
             
             List<RequestParameterInfo> requestParameterInfoList=service.getRequestParameterInfoList();
-           System.out.println("Size : "+requestParameterInfoList.size());
+            System.out.println("Size : "+requestParameterInfoList.size());
             Object args[]=new Object[requestParameterInfoList.size()];
-            Map<String,Object> reqParamMap=new LinkedHashMap<>();
+            ArrayList<Object> injectRequestParameterList=new ArrayList<>();
+            //Map<String,Object> reqParamMap=new LinkedHashMap<>();
             int i=0;
             for(RequestParameterInfo requestParameterInfo:requestParameterInfoList)
             {
@@ -341,64 +405,16 @@ public class TMWebRock extends HttpServlet {
                 }
                 
                 //check if the parameter were of inject one's (SessionScope,ApplicationScope,RequestScope and ApplicationDirectory)
-
-                if(parameterClass==SessionScope.class)
-                {
-                    SessionScope sessionScope=new SessionScope(request.getSession());
-                    args[i]=sessionScope;
-                }else if(parameterClass==ApplicationScope.class)
-                {
-                    ApplicationScope applicationScope=new ApplicationScope(getServletContext());
-                    args[i]=applicationScope;
-                }else if(parameterClass==RequestScope.class)
-                {
-                    RequestScope requestScope=new RequestScope(request);
-                    args[i]=requestScope;
-                }else if(parameterClass==ApplicationDirectory.class)
-                {
-                    String directoryPath = getServletContext().getRealPath("/");
-                    File directory=new File(directoryPath);
-                    System.out.println("Directory path "+directoryPath);
-                    ApplicationDirectory applicationDirectory=new ApplicationDirectory(directory);
-                    args[i]=applicationDirectory;
-                }else if(parameterClass==long.class || parameterClass==Long.class)
-                {
-                    args[i]=Long.parseLong(reqParam);
-                }else if(parameterClass==int.class || parameterClass==Integer.class)
-                {
-                    args[i]=Integer.parseInt(reqParam);
-                }else if(parameterClass==short.class || parameterClass==Short.class)
-                {
-                    args[i]=Short.parseShort(reqParam);
-                }else if(parameterClass==byte.class || parameterClass==Byte.class)
-                {
-                    args[i]=Byte.parseByte(reqParam);
-                }else if(parameterClass==double.class || parameterClass==Double.class)
-                {  
-                    args[i]=Double.parseDouble(reqParam);
-                }else if(parameterClass==float.class || parameterClass==Float.class)
-                {
-                    args[i]=Float.parseFloat(reqParam);
-                }else if(parameterClass==char.class || parameterClass==Character.class)
-                {
-                    args[i]=reqParam.charAt(0);
-                }else if(parameterClass==boolean.class || parameterClass==Boolean.class)
-                {
-                    args[i]=Boolean.parseBoolean(reqParam);
-                }else// means String
-                {
-                    args[i]=reqParam;
-                }
-                if(!isInjectParameter) reqParamMap.put(paramName,args[i]);
+                args[i]=parseParameterBasedOnType(request,parameterClass,reqParam);
+//                if(!isInjectParameter) reqParamMap.put(paramName,args[i]);
                 System.out.println(i);
                 i++;
             }
-            System.out.println("Map size : "+reqParamMap.size());
            System.out.println("Object arguments length : "+args.length); 
         
 
             System.out.println("Invoking method : " + serviceMethod.getName());
-            handleInjection(request, service, serviceClass, obj,reqParamMap);
+            handleInjection(request, service, serviceClass, obj);
             Object result = serviceMethod.invoke(obj, args);
             System.out.println("Result : " + result);
             if (result != null)
@@ -409,7 +425,8 @@ public class TMWebRock extends HttpServlet {
                 //handleInjection(request, service, serviceClass, obj);
                 try {
                     handleRequestForwardTo(request, response, webRockModel, forwardTo, result);
-                } catch (ServiceException serviceException) {
+                 } catch (ServiceException serviceException) {
+                    System.out.println("Got Service exception");
                     System.out.println(serviceException.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
@@ -434,7 +451,8 @@ public class TMWebRock extends HttpServlet {
             Service service = webRockModel.getService(path);
             if(service==null)
             {
-                
+                response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                return;
             }
             Class serviceClass = service.getServiceClass();
             String forwardTo = service.getForwardTo();
@@ -442,19 +460,31 @@ public class TMWebRock extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 return;
             }
+               // before invoking the service/method
+            // set data against the all autowired properties
+            Object obj=serviceClass.newInstance();
+            handleAutowiredProperties(service, request,obj);
             Method serviceMethod = service.getService();
 
             System.out.println(request.getPathInfo());
-            int a = Integer.parseInt(request.getParameter("a"));
-            int b = Integer.parseInt(request.getParameter("b"));
-            System.out.println("Values : " + a + "," + b);
+            
+            //handle json here
 
-            Object obj = serviceClass.newInstance();
-            Object result = serviceMethod.invoke(obj, a, b);
+            
+            System.out.println("Invoking method : " + serviceMethod.getName());
+            handleInjection(request, service, serviceClass, obj);
+            Object result = serviceMethod.invoke(obj, new Object[0]);
             System.out.println("Result : " + result);
             if (forwardTo != null) {
-                handleInjection(request, service, serviceClass, obj,null);
-                handleRequestForwardTo(request, response, webRockModel, forwardTo, result);
+                // no need for this line after verifying i'll remove it
+                //reason becuase handling injection is already done before
+                //handleInjection(request, service, serviceClass, obj);
+                try {
+                    handleRequestForwardTo(request, response, webRockModel, forwardTo, result);
+                } catch (ServiceException serviceException) {
+                    System.out.println(serviceException.getMessage());
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
             }
         } catch (Exception e) {
             System.out.println(e);
