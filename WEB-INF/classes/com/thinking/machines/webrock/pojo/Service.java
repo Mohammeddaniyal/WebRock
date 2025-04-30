@@ -17,6 +17,8 @@ public class Service {
     private boolean injectApplicationScope;
     private boolean injectRequestScope;
     private boolean injectApplicationDirectory;
+    private Method injectRequestParameterSetterMethod;
+    private String injectRequestParameterName;
     private List<AutowiredInfo> autowiredList;
 
     public Service() {
@@ -33,6 +35,8 @@ public class Service {
         this.injectApplicationScope=false;
         this.injectRequestScope=false;
         this.injectApplicationDirectory=false;
+        this.injectRequestParameterSetterMethod=null;
+        this.injectRequestParameterName="";
         this.autowiredList=null;
     }
 
@@ -98,6 +102,16 @@ public class Service {
         this.autowiredList=autowiredList;
     }
 
+    public void setInjectRequestParameterSetterMethod(Method injectRequestParameterSetterMethod)
+    {
+        this.injectRequestParameterSetterMethod=injectRequestParameterSetterMethod;
+    }
+
+    public void setInjectRequestParameterName(String injectRequestParameterName)
+    {
+        this.injectRequestParameterName=injectRequestParameterName;
+    }
+
     public java.lang.String getPath() {
         return this.path;
     }
@@ -158,5 +172,15 @@ public class Service {
     public List<AutowiredInfo> getAutowiredList()
     {
         return this.autowiredList;
+    }
+
+    public Method getInjectRequestParameterSetterMethod()
+    {
+        return this.injectRequestParameterSetterMethod;
+    }
+
+    public String getInjectRequestParameterName()
+    {
+        return this.injectRequestParameterName;
     }
 }
