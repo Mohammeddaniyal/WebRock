@@ -216,7 +216,7 @@ public class TMWebRockStarter extends HttpServlet {
                             }
                             //(in case of GET type service) if annotation not present raise exception and send error page
                             //Class<?> parameterClass=parameter.getType();
-                         
+                         if(isGetAllowed){
                             System.out.println("Inject Parameter "+isInjectParameter);
                             if (requestParameter == null && !isInjectParameter) {    
                                 System.out.println("RAISED EXCEPTION");
@@ -236,6 +236,7 @@ public class TMWebRockStarter extends HttpServlet {
                             System.out.println("Name : "+name);
                             requestParameterInfo=new RequestParameterInfo(parameterClass, name);
                             requestParameterInfoList.add(requestParameterInfo);
+                         }
                         }
                     
                     
