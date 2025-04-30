@@ -279,7 +279,12 @@ public class TMWebRock extends HttpServlet {
                 }
                 Class<?> parameterClass=requestParameterInfo.getParameterClass();
 
-                if(parameterClass==long.class || parameterClass==Long.class)
+                //check if the parameter were of inject one's (SessionScope,ApplicationScope,RequestScope and ApplicationDirectory)
+
+                if(parameterClass==SessionScope.class || parameterClass==ApplicationScope.class || parameterClass==RequestScope.class || parameterClass==ApplicationDirectory.class)
+                {
+                    args[i]=parameterClass.newInstance();
+                }else if(parameterClass==long.class || parameterClass==Long.class)
                 {
                     args[i]=Long.parseLong(reqParam);
                 }else if(parameterClass==int.class || parameterClass==Integer.class)
