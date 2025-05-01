@@ -11,6 +11,7 @@ import com.thinking.machines.webrock.scopes.RequestScope;
 @InjectApplicationScope
 @InjectApplicationDirectory
 @Path("/calculator")
+@SecuredAccess(checkpost="booby.test.SecureAccessTest" , guard = "performGuard")
 public class Calculator 
 {
    @Autowired(name = "std")
