@@ -382,6 +382,7 @@ private Object getScopeObject(HttpServletRequest request,Class clazz)
         //now invoke method 
         try{
             Object object=clazz.newInstance();
+            System.out.println(args[0]);
             method.invoke(object,args);
         }catch(InvocationTargetException | IllegalAccessException | InstantiationException exception)
         {
@@ -466,6 +467,7 @@ private Object getScopeObject(HttpServletRequest request,Class clazz)
 
         } catch (ServiceException serviceException) {
             System.out.println(serviceException);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (InvocationTargetException ite) {
             System.out.println(ite);
         } catch (Exception e) {
