@@ -19,6 +19,7 @@ import com.thinking.machines.webrock.pojo.Service;
 import com.thinking.machines.webrock.pojo.AutowiredInfo;
 import com.thinking.machines.webrock.pojo.RequestParameterFieldInfo;
 import com.thinking.machines.webrock.pojo.RequestParameterInfo;
+import com.thinking.machines.webrock.pojo.SecuredAccessInfo;
 import com.thinking.machines.webrock.scopes.ApplicationScope;
 import com.thinking.machines.webrock.scopes.RequestScope;
 import com.thinking.machines.webrock.scopes.SessionScope;
@@ -347,6 +348,14 @@ public class TMWebRock extends HttpServlet {
         }
     }
 
+    private void ensureSecuredAccess(Service service) throws ServiceException
+    {
+        SecuredAccessInfo securedAccessInfo=service.getSecuredAccessInfo();
+        if(securedAccessInfo==null) return;
+        Class clazz=securedAccessInfo.getClazz();
+        Method method=
+    }
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         try {
             System.out.println("GET TYPE REQUEST");
@@ -364,6 +373,8 @@ public class TMWebRock extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 return;
             }
+            //perform security checks
+            ensureSecuredAccess(service);
             // before invoking the service/method
             // set data against the all autowired properties
             Object obj = serviceClass.newInstance();
