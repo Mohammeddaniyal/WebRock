@@ -467,7 +467,10 @@ private Object getScopeObject(HttpServletRequest request,Class clazz)
 
         } catch (ServiceException serviceException) {
             System.out.println(serviceException);
+        try{    
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }catch(Exception ee){//do nothing
+        }
         } catch (InvocationTargetException ite) {
             System.out.println(ite);
         } catch (Exception e) {
