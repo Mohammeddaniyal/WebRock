@@ -68,6 +68,18 @@ public class TMWebRockStarter extends HttpServlet {
                 if (path == null)
                     continue;
 
+                SecuredAccess classSecuredAccess=serviceClass.getAnnotation(SecuredAccess.class);
+                SecuredAccessInfo classLevelSecuredAccessInfo=null;
+                if(classSecuredAccess!=null)
+                {
+                    classLevelSecuredAccessInfo=handlSecuredAccessInfo(classSecuredAccess);
+                    if(classLevelSecuredAccessInfo==null) 
+                    {
+                        //raise exception
+                        return; 
+                    }
+                }
+                
                 boolean isGetAllowedOnClass = serviceClass.isAnnotationPresent(GET.class);
 
                 boolean isPostAllowedOnClass = serviceClass.isAnnotationPresent(POST.class);
@@ -82,7 +94,7 @@ public class TMWebRockStarter extends HttpServlet {
 
               //before creating service object and putting them into hashamp
               //create List of autowired properties
-              Field[] fields=serviceClass.getDeclaredFields();
+                Field[] fields=serviceClass.getDeclaredFields();
                 ArrayList<AutowiredInfo> autowiredList=new ArrayList<>();
                 ArrayList<RequestParameterFieldInfo> requestParameterFieldInfoList=new ArrayList<>();
                 RequestParameterFieldInfo requestParameterFieldInfo;
@@ -148,7 +160,7 @@ public class TMWebRockStarter extends HttpServlet {
               
                 Method[] methods = serviceClass.getDeclaredMethods();
                 serviceClass.getDeclaredMethods();
-             
+                SecuredAccessInfo securedAccessInfo;
                  for (Method method : methods) {
                     System.out.println("Comes : " + method.getName());
                     boolean pathPresent = method.isAnnotationPresent(Path.class);
@@ -161,6 +173,28 @@ public class TMWebRockStarter extends HttpServlet {
                     OnStartUp onStartUp = null;
                     if (onStartUpPresent)
                         onStartUp = method.getAnnotation(OnStartUp.class);
+                    SecuredAccess methodSecuredAccess=method.getAnnotation(SecuredAccess.class);
+                    //if OnStartUp applied and as well as SecuredAccess
+                    //don't allow becuase secured access if for http request services
+                    //but onstartup is when framework loads at the time of initialization
+                    if(securedAccessInfo!=null && onStartUpPresent)
+                    {
+                        //raise exception
+                        return;
+                    }
+                    
+                    //if not found then use the class one
+                    if(securedAccessInfo==null)
+                    {
+                        securedAccessInfo=classLevelSecuredAccessInfo;
+                    }else{
+                        securedAccessInfo=handlSecuredAccessInfo(methodSecuredAccess);
+                        if(securedAccessInfo==null)
+                        {
+                            //raise exception
+                            return;
+                        }
+                    }
                     System.out.println("OnStartup is " + method.isAnnotationPresent(OnStartUp.class));
                     System.out.println("Arrived : " + method.getName());
                     boolean runOnStart = (onStartUp != null);
@@ -265,6 +299,7 @@ public class TMWebRockStarter extends HttpServlet {
                     service.setInjectApplicationDirectory(injectApplicationDirectory);
                     service.setAutowiredList(autowiredList);
                     service.setRequestParameterFieldInfoList(requestParameterFieldInfoList);
+                    service.setSecuredAccessInfo(securedAccessInfo);
                     if (forward != null)
                         service.setForwardTo(forward.value());
                     if (runOnStart) {
@@ -299,7 +334,7 @@ public class TMWebRockStarter extends HttpServlet {
             }
             // c:\tomcat9\webapps\dan\WEB-INF\classes\booby\com...
             // +1 for backslash
-            // index+=rootFolderName.length()+1;
+            //no need for this -> index+=rootFolderName.length()+1;
             String packageName = absolutePath.substring(index).replace("\\", ".");
             packageName = packageName.substring(0, packageName.lastIndexOf("."));
             System.out.println("packageName : " + packageName);
@@ -336,5 +371,59 @@ public class TMWebRockStarter extends HttpServlet {
         } catch (IllegalAccessException | InvocationTargetException | InstantiationException exception) {
             System.out.println(exception);
         }
+    }
+    private SecuredAccessInfo handlSecuredAccessInfo(SecuredAccess securedAccess) throws ServletException
+    {
+        String checkpost="";
+        String guard="";
+        Class classCheckpostClass;
+        Method classGuardMethod=null;
+        boolean securedAccessOnClass=false;
+        //if present then check for the checkpost and guard value
+        if(classSecuredAccess!=null){
+        checkpost=classSecuredAccess.checkpost();
+        guard=classSecuredAccess.guard();
+        if(checkpost==null || guard==null)
+        {
+            //raise exception 
+            //put exception in DS
+            System.out.println("INvalid Class checkpost/guard");
+            return null;
+        }else if(checkpost.trim().length()==0 || guard.trim().length()==0)
+        {
+            //raise exception 
+            //put exception in DS
+            System.out.println("Invalid Class checkpost/guard");
+            return null;
+        }
+        //now load the class and find the method
+        try{
+            classCheckpostClass=Class.forName(checkpost);
+            //if class successfully loaded now fint the guard method
+            Method methods[]=classCheckpostClass.getMethods();
+            for(Method m:methods)
+            {
+                if(m.getName().equals(guard))
+                {
+                    classGuardMethod=m;
+                    break;
+                }
+            }
+            //not found raise exception 
+            if(classGuardMethod==null)
+            {
+                //load exception in DS
+                return null;
+            }
+            SecuredAccessInfo securedAccessInfo=new SecuredAccessInfo();
+            securedAccessInfo.setClazz(classCheckpostClass);
+            securedAccessInfo.setMethod(classGuardMethod);
+            return securedAccessInfo;
+        }catch(ClassNotFoundException classNotFoundException)
+        {
+            //raise exception and load into DS
+            return null;
+        }
+        }// handling secured access on class level ends here   
     }
 }
