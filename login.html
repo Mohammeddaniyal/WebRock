@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+</head> 
+<script src="jquery/jquery.js"></script>
+<script>
+    $(()=>{
+        $('#loginButton').click(function(){
+            $.ajax({
+    type:"POST",
+    url:"calculatorService/login/login",
+    success:function(data)
+    {
+        alert('success');
+    },
+    failure:function()
+    {
+        alert('failed');
+    }
+});
+ 
+    });
+        });
+</script>
+<body>
+    <center><h1>Dummy Login</h1></center>
+    <button id='loginButton' type="'button">Login</button>
+</body>
+</html>
