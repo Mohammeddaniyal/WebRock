@@ -71,7 +71,7 @@ public class TMWebRockStarter extends HttpServlet {
                 SecuredAccess classSecuredAccess = (SecuredAccess) serviceClass.getAnnotation(SecuredAccess.class);
                 SecuredAccessInfo classLevelSecuredAccessInfo = null;
                 if (classSecuredAccess != null) {
-                    classLevelSecuredAccessInfo = handlSecuredAccessInfo(classSecuredAccess);
+                    classLevelSecuredAccessInfo = handleSecuredAccessInfo(classSecuredAccess);
                     if (classLevelSecuredAccessInfo == null) {
                         // raise exception
                         return;
@@ -169,16 +169,18 @@ public class TMWebRockStarter extends HttpServlet {
                     // but onstartup is when framework loads at the time of initialization
                     if (securedAccessInfo != null && onStartUpPresent) {
                         // raise exception
+                        System.out.println("Raised exception !!!!");
                         return;
                     }
 
                     // if not found then use the class one
-                    if (securedAccessInfo == null) {
+                    if (methodSecuredAccess == null) {
                         securedAccessInfo = classLevelSecuredAccessInfo;
                     } else {
-                        securedAccessInfo = handlSecuredAccessInfo(methodSecuredAccess);
+                        securedAccessInfo = handleSecuredAccessInfo(methodSecuredAccess);
                         if (securedAccessInfo == null) {
                             // raise exception
+                            System.out.println("Bye byte");
                             return;
                         }
                     }
@@ -362,7 +364,7 @@ public class TMWebRockStarter extends HttpServlet {
         }
     }
 
-    private SecuredAccessInfo handlSecuredAccessInfo(SecuredAccess securedAccess) throws ServletException {
+    private SecuredAccessInfo handleSecuredAccessInfo(SecuredAccess securedAccess) throws ServletException {
         String checkpost = "";
         String guard = "";
         Class classCheckpostClass;
