@@ -19,6 +19,7 @@ public class Service {
     private boolean injectApplicationDirectory;
     private List<AutowiredInfo> autowiredList;
     private List<RequestParameterFieldInfo> requestParameterFieldInfoList;
+    private SecuredAccessInfo securedAccessInfo;
 
     public Service() {
         this.serviceClass = null;
@@ -36,6 +37,7 @@ public class Service {
         this.injectApplicationDirectory=false;
         this.autowiredList=null;
         this.requestParameterFieldInfoList=null;
+        this.securedAccessInfo=null;
     }
 
     public void setServiceClass(java.lang.Class serviceClass) {
@@ -105,6 +107,11 @@ public class Service {
         this.requestParameterFieldInfoList=requestParameterFieldInfoList;
     }
 
+    public void setSecuredAccessInfo(SecuredAccessInfo securedAccessInfo)
+    {
+        this.securedAccessInfo=securedAccessInfo;
+    }
+
     public java.lang.String getPath() {
         return this.path;
     }
@@ -170,5 +177,10 @@ public class Service {
     public List<RequestParameterFieldInfo> getRequestParameterFieldInfoList()
     {
         return this.requestParameterFieldInfoList;
+    }
+
+    public SecuredAccessInfo getSecuredAccessInfo()
+    {
+        return this.securedAccessInfo;
     }
 }
