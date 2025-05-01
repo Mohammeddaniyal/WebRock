@@ -30,24 +30,32 @@ import com.thinking.machines.webrock.annotations.GET;
 import com.thinking.machines.webrock.model.WebRockModel;
 
 public class TMWebRock extends HttpServlet {
+private Object getScopeObject(HttpServletRequest request,Class clazz)
+{
+    Object obj=null;
+    if (clazz == SessionScope.class) {
+        SessionScope sessionScope = new SessionScope(request.getSession());
+        obj = sessionScope;
+    } else if (clazz == ApplicationScope.class) {
+        ApplicationScope applicationScope = new ApplicationScope(getServletContext());
+        obj = applicationScope;
+    } else if (clazz == RequestScope.class) {
+        RequestScope requestScope = new RequestScope(request);
+        obj = requestScope;
+    } else if (clazz == ApplicationDirectory.class) {
+        String directoryPath = getServletContext().getRealPath("/");
+        File directory = new File(directoryPath);
+        System.out.println("Directory path " + directoryPath);
+        ApplicationDirectory applicationDirectory = new ApplicationDirectory(directory);
+        obj = applicationDirectory;
+    }
+    return obj;
+}
     private Object parseParameterBasedOnType(HttpServletRequest request, Class clazz, String reqParam) {
         Object arg = null;
-        if (clazz == SessionScope.class) {
-            SessionScope sessionScope = new SessionScope(request.getSession());
-            arg = sessionScope;
-        } else if (clazz == ApplicationScope.class) {
-            ApplicationScope applicationScope = new ApplicationScope(getServletContext());
-            arg = applicationScope;
-        } else if (clazz == RequestScope.class) {
-            RequestScope requestScope = new RequestScope(request);
-            arg = requestScope;
-        } else if (clazz == ApplicationDirectory.class) {
-            String directoryPath = getServletContext().getRealPath("/");
-            File directory = new File(directoryPath);
-            System.out.println("Directory path " + directoryPath);
-            ApplicationDirectory applicationDirectory = new ApplicationDirectory(directory);
-            arg = applicationDirectory;
-        } else if (clazz == long.class || clazz == Long.class) {
+        arg=getScopeObject(request,clazz);
+        if(arg!=null) return arg;
+        if (clazz == long.class || clazz == Long.class) {
             arg = Long.parseLong(reqParam);
         } else if (clazz == int.class || clazz == Integer.class) {
             arg = Integer.parseInt(reqParam);
@@ -348,12 +356,37 @@ public class TMWebRock extends HttpServlet {
         }
     }
 
-    private void ensureSecuredAccess(Service service) throws ServiceException
+    private void ensureSecuredAccess(HttpServletRequest request,Service service) throws ServiceException
     {
         SecuredAccessInfo securedAccessInfo=service.getSecuredAccessInfo();
         if(securedAccessInfo==null) return;
         Class clazz=securedAccessInfo.getClazz();
-        Method method=
+        Method method=securedAccessInfo.getMethod();
+        Parameter pararmeters[]=method.getParameters();
+        Object args[]=new Object[pararmeters.length];
+        int i=0;
+        Class<?> paramType;
+        Object arg;
+        for(Parameter parameter:pararmeters)
+        {
+            paramType=parameter.getType();
+            arg=getScopeObject(request, paramType);
+            if(arg==null)
+            {
+                //raise exception that method now allowed with parameters other than scope class one's
+                throw new ServiceException("Parameter type not allowed");
+            }
+            args[i]=arg;
+            i++;
+        }
+        //now invoke method 
+        try{
+            Object object=clazz.newInstance();
+            method.invoke(object,args);
+        }catch(InvocationTargetException | IllegalAccessException | InstantiationException exception)
+        {
+            throw new ServiceException("Exception occured cause "+exception);
+        }
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -374,7 +407,7 @@ public class TMWebRock extends HttpServlet {
                 return;
             }
             //perform security checks
-            ensureSecuredAccess(service);
+            ensureSecuredAccess(request,service);
             // before invoking the service/method
             // set data against the all autowired properties
             Object obj = serviceClass.newInstance();
