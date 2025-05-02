@@ -3,6 +3,7 @@ package com.thinking.machines.webrock;
 import com.google.gson.*;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -463,6 +464,9 @@ private Object getScopeObject(HttpServletRequest request,Class clazz)
                     System.out.println(serviceException.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
+            }else{
+                //if not forward then send response
+                sendResponse(response,result);
             }
 
         } catch (ServiceException serviceException) {
@@ -585,9 +589,30 @@ private Object getScopeObject(HttpServletRequest request,Class clazz)
                     System.out.println(serviceException.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
+            }else{
+                //if not forward then send the response
+                sendResponse(response,result);
             }
         } catch (Exception e) {
             System.out.println(e);
+        }
+    }
+    private void sendResponse(HttpServletResponse response,Object result)
+    {
+        try{
+            Gson gson=new Gson();
+            PrintWriter printWriter=response.getWriter();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            printWriter.print(gson.toJson(result));
+        }catch(Exception exception)
+        {
+            try {
+                System.out.println("Sending response exception "+ exception);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
         }
     }
 }
