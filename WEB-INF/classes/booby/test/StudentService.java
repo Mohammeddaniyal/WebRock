@@ -17,6 +17,8 @@ public class StudentService {
     @POST
     public void add(Student student)
     {
+        System.out.println("Student arrived : ");
+        System.out.println(student.getRollNumber()+","+student.getName());
         if(student==null) return;
         int rollNumber=student.getRollNumber();
         if(rollNumber<=0) return;
@@ -105,7 +107,7 @@ public class StudentService {
             // TODO: handle exception
         }
     }
-    @Path("/getByCode")
+    @Path("/getByRollNumber")
     @GET
     public Student getByRollNumber(@RequestParameter("rollNumber") int rollNumber)
     {
