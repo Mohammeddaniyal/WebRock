@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Student Service</title>
+    </head>
+    <script src="jquery/jquery.js"></script>
+    <!--following code is for the student service-->
+    <script>
+        class Student{
+            constructor(rollNumber,name)
+            {
+                this.rollNumber=rollNumber;
+                this.name=name;
+            }
+            getRollNumber()
+            {
+                return this.rollNumber;
+            }
+            getName()
+            {
+                return this.name;
+            }
+        }
+        class StudentService{
+            add(student)
+            {
+                var prm=new Promise(function(done,problem){
+                    $.ajax({
+                        type:"POST",
+                        url:"services/studentService/add",
+                        data: JSON.stringify(student),
+                        success: function(data)
+                        {
+                            alert('Added successfully');
+                        },
+                        failure: function()
+                        {
+                            alert('Failed');
+                        },
+                        dataType:"json"
+                    });
+                });
+                return prm;
+            }
+            update(student)
+            {
+                var prm=new Promise(function(done,problem){
+                    $.ajax({
+                        type:"POST",
+                        url:"services/studentService/update",
+                        data: JSON.stringify(student),
+                        success: function(data)
+                        {
+                            alert('Updated successfully');
+                        },
+                        failure: function()
+                        {
+                            alert('Failed');
+                        },
+                        dataType:"json"
+                    });
+                });
+                return prm;
+            }
+            delete(rollNumber)
+            {
+                var prm=new Promise(function(done,problem){
+                    $.ajax({
+                        type:"POST",
+                        url:"",
+                        data: JSON.stringify(rollNumber),
+                        success: function(data)
+                        {
+                            alert('Deleted successfully');
+                        },
+                        failure: function()
+                        {
+                            alert('Failed');
+                        },
+                        dataType:"json"
+                    });
+                });
+                return prm;
+            }
+            getByRollNumber(rollNumber)
+            {
+                var prm=new Promise(function(done,problem){
+                    $.ajax({
+                        url:"services/studentService/getByRollNumber",
+                        data:{"rollNumber":rollNumber},
+                        success:function(data)
+                        {
+                            alert(data);
+                            var student=JSON.parse(data);
+                            alert(student.getRollNumber());
+                            alert(student.getName());
+                        },
+                        failure:function()
+                        {
+                            alert("Failed");
+                        }
+                    });
+                });
+                return prm;
+            }
+            
+            getAll()
+            {
+                var prm=new Promise(function(done,problem){
+                    $.get('url',function(data){
+                        done(data);
+                    });
+                });
+                return prm;
+            
+            }
+        }
+    </script>
+    <script>
+        function getRollNumberFromForm(form)
+        {
+            var rn=form.find('input[id="rollNumber"]').val();
+            alert(rn);
+            return rn;
+        }
+        function getNameFromForm(form)
+        {
+            var nm=form.find('input[id="name"]').val();
+            alert(nm);
+            return nm;
+        }
+        $(()=>{
+            $("#addButton").click(function () {
+                alert('add button clicked');
+                var form=$('#addForm');
+                var rollNumber=getRollNumberFromForm(form);
+                var name=getNameFromForm(form);
+                var studentService=new StudentService();
+                var student=new Student(rollNumber,name);
+                alert("Student object : "+student);
+                studentService.add(student).then(function(data){
+                    alert('Added');
+                });
+            });
+            $("#updateButton").click(function () {
+                var form=$('#updateForm');
+                var rollNumber=getRollNumberFromForm(form);
+                var name=getNameFromForm(form);
+                var studentService=new StudentService();
+                var student=new Student(rollNumber,name);
+                studentService.update(student).then(function(data){
+                    alert('Updated');
+                });
+            });
+            $("#deletButton").click(function () {
+                var studentService=new StudentService();
+                studentService.delete(getRollNumberFromForm($('#deleteForm'))).then(function(data){
+                    alert('Deleted');
+                });
+            });
+            $("#getByButton").click(function () {
+                var studentService=new StudentService();
+                studentService.getByRollNumber(getRollNumberFromForm($('#getByForm'))).then(function(data){
+                    alert(data);
+                    var student=JSON.parse(data);
+                    alert("Parsed "+student);
+                    alert('Added');
+                });
+            });
+            $("#getAllButton").click(function () {
+                alert(data);
+                var response = JSON.parse(data);
+                var result = response.result;
+                var table = $("students");
+                var th1 = $('<th>').text('Roll Number');
+                var th2 = $('<th>').text('Name');
+                table.append($('<thead>').append(th1, th2));
+                for (var i = 0; i < result.length; i++) {
+                    var tr = $('<tr>');
+                    var td1 = $('<td>').text(result[i].rollNumber);
+                    var td2 = $('<td>').text(result[i].name);
+                    tr.append(td1, td2);
+                    table.append(tr);
+                }
+
+            });
+
+        });
+    </script>
+    <div id='addDiv' style='border:1px solid black;margin:5px;padding:5px'>
+        <form id='addForm'>
+            Roll Number <input type='text' id="rollNumber" name="rollNumber"><br>
+            Name <input type="text" id="name" name="name"><br>
+        </form>
+        <button id="addButton" type='submit'>Add</button>
+    </div>
+    <div id='updateDiv' style="border:1px solid black;margin:5px;padding:15px">
+        <form id='updateForm'>
+            Roll Number <input type='text' id="rollNumber" name="rollNumber"><br>
+            Name <input type="text" id="name" name="name"><br>
+        </form>
+        <button id="updateButton" type='submit'>Update</button>
+
+    </div>
+    <div id='getByDiv' style="border:1px solid black;margin:5px;padding:15px">
+        <form id='getByForm'>
+            Roll Number <input type='text' id="rollNumber" name="rollNumber"><br>
+        </form>
+        <button id="getByButton" type='submit'>Get</button>
+    </div>
+    <div id='deleteDiv' style="border:1px solid black;margin:5px;padding:15px">
+        <form id='deleteForm'>
+            Roll Number <input type='text' id="rollNumber" name="rollNumber"><br>
+        </form>
+        <button id="deleteButton" type='submit'>Delete</button>
+
+    </div>
+    
+    <div id='getAllDiv' style="border:1px solid black;margin:5px;padding:15px">
+        <table id="studentsTable">
+            </table>
+        <button id="getAllButton" type='submit'>Get All</button>
+
+    </div>
+    
+</html>
