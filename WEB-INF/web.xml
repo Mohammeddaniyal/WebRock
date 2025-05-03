@@ -60,7 +60,7 @@
 
 <servlet-mapping>
     <servlet-name>TMWebRock</servlet-name>
-    <url-pattern>/calculatorService/*</url-pattern>
+    <url-pattern>/services/*</url-pattern>
 </servlet-mapping>
 
 
