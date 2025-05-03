@@ -174,7 +174,7 @@ public class StudentService {
         {
             Connection connection=DAOConnection.getConnection();
             Statement statement=connection.createStatement();
-            ResultSet resultSet=statement.executeQuery("select * from students");
+            ResultSet resultSet=statement.executeQuery("select * from student");
             while(resultSet.next())
             {
                 rollNumber=resultSet.getInt("roll_number");
@@ -187,5 +187,42 @@ public class StudentService {
             System.out.println("Exception getAll "+e);
         }
         return students;
+    }
+    @Path("/delete")
+    @POST
+    public void delete(int rollNumber)
+    {
+        if(rollNumber<=0)
+        {
+            System.out.println("Invalid roll number");
+            return;
+        }
+        try
+        {
+            Connection connection=DAOConnection.getConnection();
+            PreparedStatement preparedStatement=connection.prepareStatement("select roll_number from student where roll_number=?");
+            preparedStatement.setInt(1,rollNumber);
+            ResultSet resultSet=preparedStatement.executeQuery();
+            if(!resultSet.next())
+            {
+                resultSet.close();
+                preparedStatement.close();
+                connection.close();
+                System.out.println("not found");
+                return;
+            }
+            resultSet.close();
+            preparedStatement.close();
+            preparedStatement=connection.prepareStatement("delete from student where roll_number=?");
+            preparedStatement.setInt(1,rollNumber);
+            preparedStatement.executeUpdate();
+            System.out.println("DELETED");
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        }catch(SQLException e)
+        {
+            System.out.println("Delete Exception : "+e);
+        }
     }
 }
