@@ -487,9 +487,11 @@ private Object getScopeObject(HttpServletRequest request,Class clazz)
             System.out.println("POST TYPE REQUEST");
             WebRockModel webRockModel = (WebRockModel) getServletContext().getAttribute("webRockModel");
             String path = request.getPathInfo();
+            System.out.println("Path "+path);
             Service service = webRockModel.getService(path);
             if(service==null)
             {
+                System.out.println("Service not found");
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 return;
             }
