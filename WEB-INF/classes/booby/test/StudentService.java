@@ -140,12 +140,13 @@ public class StudentService {
             ResultSet resultSet=preparedStatement.executeQuery();
             if(resultSet.next())
             {
-                resultSet.close();
-                preparedStatement.close();
-                connection.close();
+              
                 rollNumber = resultSet.getInt("roll_number");
                 String name = resultSet.getString("name").trim();
                 student=new Student(rollNumber, name);
+                resultSet.close();
+                preparedStatement.close();
+                connection.close();
                 System.out.println(" found");
                 return student;
             }
@@ -156,6 +157,7 @@ public class StudentService {
             return student;
         
         } catch (SQLException e) {
+            System.out.println("Get By rollnumber "+e);
             // TODO: handle exception
         }
         return student;
