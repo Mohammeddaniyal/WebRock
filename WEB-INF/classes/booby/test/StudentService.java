@@ -57,13 +57,30 @@ public class StudentService {
     @POST
     public void update(Student student)
     {
-        if(student==null) return;
+        System.out.println("Update arrived");
+        System.out.println("Student "+student);
+        System.out.println(student.getRollNumber()+","+student.getName());
+        if(student==null) 
+        {
+            System.out.println("NULL");
+            return;
+        }    
         int rollNumber=student.getRollNumber();
-        if(rollNumber<=0) return;
-        String name=student.getName();
-        if(name==null) return;
-        name=name.trim();
-        if(name.length()==0)return;
+        if(rollNumber<=0) {
+            System.out.println("Invalid roll number");
+            return;
+        }    String name=student.getName();
+        if(name==null) 
+        {
+         System.out.println("Name is null");
+            return;
+        }
+            name=name.trim();
+        if(name.length()==0)
+        {
+            System.out.println("Name length is zero");
+            return;
+        }
         try{
             Connection connection=DAOConnection.getConnection();
             PreparedStatement preparedStatement=connection.prepareStatement("select roll_number from student where roll_number=?");
@@ -80,7 +97,7 @@ public class StudentService {
             resultSet.close();
             preparedStatement.close();
 
-            preparedStatement=connection.prepareStatement("select roll_number from student where name=? and code<>?");
+            preparedStatement=connection.prepareStatement("select roll_number from student where name=? and roll_number<>?");
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, rollNumber);
 
@@ -105,7 +122,9 @@ public class StudentService {
             
         } catch (SQLException e) {
             // TODO: handle exception
+            System.out.println("SqlException"+e);
         }
+        
     }
     @Path("/getByRollNumber")
     @GET
