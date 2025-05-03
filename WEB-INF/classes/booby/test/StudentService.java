@@ -135,7 +135,7 @@ public class StudentService {
 
         try{
             Connection connection=DAOConnection.getConnection();
-            PreparedStatement preparedStatement=connection.prepareStatement("select roll_number from student where name=?");
+            PreparedStatement preparedStatement=connection.prepareStatement("select * from student where roll_number=?");
             preparedStatement.setInt(1, rollNumber);
             ResultSet resultSet=preparedStatement.executeQuery();
             if(resultSet.next())
