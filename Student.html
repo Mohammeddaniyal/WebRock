@@ -6,117 +6,7 @@
     </head>
     <script src="jquery/jquery.js"></script>
     <!--following code is for the student service-->
-    <script>
-        class Student{
-            constructor(rollNumber,name)
-            {
-                this.rollNumber=rollNumber;
-                this.name=name;
-            }
-            getRollNumber()
-            {
-                return this.rollNumber;
-            }
-            getName()
-            {
-                return this.name;
-            }
-        }
-        class StudentService{
-            add(student)
-            {
-                var prm=new Promise(function(done,problem){
-                    $.ajax({
-                        type:"POST",
-                        url:"services/studentService/add",
-                        data: JSON.stringify(student),
-                        success: function(data)
-                        {
-                            alert('Added successfully');
-                        },
-                        failure: function()
-                        {
-                            alert('Failed');
-                        },
-                        dataType:"json"
-                    });
-                });
-                return prm;
-            }
-            update(student)
-            {
-                var prm=new Promise(function(done,problem){
-                    $.ajax({
-                        type:"POST",
-                        url:"services/studentService/update",
-                        data: JSON.stringify(student),
-                        success: function(data)
-                        {
-                            alert('Updated successfully');
-                        },
-                        failure: function()
-                        {
-                            alert('Failed');
-                        },
-                        dataType:"json"
-                    });
-                });
-                return prm;
-            }
-            delete(rollNumber)
-            {
-                var prm=new Promise(function(done,problem){
-                    $.ajax({
-                        type:"POST",
-                        url:"",
-                        data: JSON.stringify(rollNumber),
-                        success: function(data)
-                        {
-                            alert('Deleted successfully');
-                        },
-                        failure: function()
-                        {
-                            alert('Failed');
-                        },
-                        dataType:"json"
-                    });
-                });
-                return prm;
-            }
-            getByRollNumber(rollNumber)
-            {
-                var prm=new Promise(function(done,problem){
-                    $.ajax({
-                        url:"services/studentService/getByRollNumber",
-                        data:{"rollNumber":rollNumber},
-                        success:function(data)
-                        {
-                            alert(data);
-                            var student=JSON.parse(data);
-                            alert(student.getRollNumber());
-                            alert(student.getName());
-                        },
-                        failure:function()
-                        {
-                            alert("Failed");
-                        }
-                    });
-                });
-                return prm;
-            }
-            
-            getAll()
-            {
-                var prm=new Promise(function(done,problem){
-                    $.get('url',function(data){
-                        done(data);
-                    });
-                });
-                return prm;
-            
-            }
-        }
-    </script>
+    <script src="Student.js"></script>
     <script>
         function getRollNumberFromForm(form)
         {
@@ -153,7 +43,8 @@
                     alert('Updated');
                 });
             });
-            $("#deletButton").click(function () {
+            $("#deleteButton").click(function () {
+                alert('delete called');
                 var studentService=new StudentService();
                 studentService.delete(getRollNumberFromForm($('#deleteForm'))).then(function(data){
                     alert('Deleted');
@@ -169,10 +60,15 @@
                 });
             });
             $("#getAllButton").click(function () {
+                var studentService=new StudentService();
+                studentService.getAll().then(function (data){
                 alert(data);
-                var response = JSON.parse(data);
-                var result = response.result;
-                var table = $("students");
+                if(typeof data == 'string')var response = JSON.parse(data);
+                else response=data;
+                var result = response;
+                alert(result.length);
+
+                var table = $("#studentsTable");
                 var th1 = $('<th>').text('Roll Number');
                 var th2 = $('<th>').text('Name');
                 table.append($('<thead>').append(th1, th2));
@@ -182,7 +78,8 @@
                     var td2 = $('<td>').text(result[i].name);
                     tr.append(td1, td2);
                     table.append(tr);
-                }
+                    }
+                });
 
             });
 
