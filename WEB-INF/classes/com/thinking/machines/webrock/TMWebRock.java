@@ -615,6 +615,7 @@ private Object getScopeObject(HttpServletRequest request,Class clazz)
             } catch (Exception e) {
                 // TODO: handle exception
             }
+            System.out.println("Send response "+exception);
         }
     }
 }
