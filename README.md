@@ -42,7 +42,7 @@ This makes it perfect for **students, interviews, and small projects** where you
 
 ### Startup Phase
 <div style="text-align: center;">
-  <img src="docs/images/tmwebrock_startup.png" alt="Startup Flowchart" style="max-width: 80%; height: 350; width: 250px;"/>
+  <img src="docs/images/tmwebrock_startup.png" alt="Startup Flowchart" style="max-width: 80%; height: 250; width: 150px;"/>
 </div>
 At server startup, TMWebRockStarter scans configured packages, registers services, and runs lifecycle hooks.
 
