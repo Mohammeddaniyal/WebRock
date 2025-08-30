@@ -49,7 +49,7 @@ At server startup, TMWebRockStarter scans configured packages, registers service
 ### Request Handling Phase
 
 <div style="text-align: center; margin-top: 20px;">
-  <img src="docs/images/tmwebrock_request_flow.png" alt="Request Handling Flowchart" style="max-width: 100%; height: auto; width: 400px;"/>
+  <img src="docs/images/tmwebrock_request_flow.png" alt="Request Handling Flowchart" style="max-width: 80%; height: 800px; width: 200px;"/>
 </div>
 Handles HTTP requests by locating services, validating methods, injecting dependencies, invoking methods, and forwarding or responding with JSON.
 
