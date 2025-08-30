@@ -69,6 +69,7 @@
                 alert(result.length);
 
                 var table = $("#studentsTable");
+                table.empty();
                 var th1 = $('<th>').text('Roll Number');
                 var th2 = $('<th>').text('Name');
                 table.append($('<thead>').append(th1, th2));
